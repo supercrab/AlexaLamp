@@ -30,7 +30,7 @@ The lamp has 2 modes: Alexa (default) and standalone.  To change mode, power cyc
 * Plain old lamp
 * Rotary encoder works straight away
 
-## Alexa voice control
+### Alexa voice control
 
 Once setup, you can use different ways to invoke Alexa to modify the device's state:
 
