@@ -1,7 +1,7 @@
 # AlexaLamp
 This project is to create a lamp with Alexa voice control where you can also change the brightness using a rotary encoder with push switch.
 
-![Project schematic](images/lamp2.jpg)
+![Lamp looking cool](images/lamp2.jpg)
 
 ## Hardware:
 
@@ -14,7 +14,7 @@ This project is to create a lamp with Alexa voice control where you can also cha
 
 ## How to use
 
-The lamp has 2 modes: Alexa (default) and standalone.  To change mode, power cycle the lamp whilst holding the rotary encoder push switch down.  When the device boots it will flash to let you know which mode it is in.  1 flash indicates standalone and 2 flashes is Alexa mode.
+The lamp has 2 modes: Alexa (default) and standalone.  To change the mode, power cycle the lamp whilst holding the rotary encoder push switch down until the lamp slowly flashes.  The number of flashes is to let you know which mode the lamp is currently in.  1 flash indicates standalone and 2 flashes is Alexa mode.
 
 ### Alexa mode (default)
 * When the lamp is turned on for the first time it will create an unsecured wifi hotspot called Lamp
@@ -38,3 +38,6 @@ Once setup, you can use different ways to invoke Alexa to modify the lamp's stat
 * Alexa, turn on lamp
 * Alexa, set lamp to fifty (50 means 50% of brightness)
 * Alexa, set lamp to one hundred (100% brightness)
+
+![Lamp looking cool](images/lamp1.jpg)
+![Lamp looking cool](images/lamp3.jpg)
