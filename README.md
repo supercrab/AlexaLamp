@@ -32,7 +32,7 @@ The lamp has 2 modes: Alexa (default) and standalone.  To change mode, power cyc
 
 ### Alexa voice control
 
-Once setup, you can use different ways to invoke Alexa to modify the device's state:
+Once setup, you can use different ways to invoke Alexa to modify the lamp's state:
 
 * Alexa, turn lamp on
 * Alexa, turn on lamp
