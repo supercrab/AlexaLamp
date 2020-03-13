@@ -37,4 +37,4 @@ Once setup, you can use different ways to invoke Alexa to modify the device's st
 * Alexa, turn lamp on
 * Alexa, turn on lamp
 * Alexa, set lamp to fifty (50 means 50% of brightness)
-* Alexa, set lamp to one hundred" (100% brightness)
+* Alexa, set lamp to one hundred (100% brightness)
