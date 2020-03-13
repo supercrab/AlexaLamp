@@ -1,7 +1,7 @@
 # AlexaLamp
 This project is to create a lamp with Alexa voice control where you can also change the brightness using a rotary encoder with push switch.
 
-![Project schematic](images/lamp1.jpg)
+![Project schematic](images/lamp2.jpg)
 
 ## Hardware:
 
