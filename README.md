@@ -1,5 +1,6 @@
 # AlexaLamp
-This project is to create a lamp with Alexa voice control where you can also change the brightness using a rotary encoder with push switch.
+
+This project was to create an Alexa voice controlled lamp with adjustable brightness.  The lamp can also be illuminated and brightness adjusted using a rotary encoder with push switch.
 
 ![Lamp looking cool](images/lamp2.jpg)
 
@@ -21,17 +22,18 @@ This project is to create a lamp with Alexa voice control where you can also cha
 
 ## Instructions
 
-* Build circuit on a breadboard 
-* Compile and upload code to Wemos D1
-* Test everything works
-* Take a wooden block and hollow out
-* Arrange all the components into the cavity but **ensure wires carrying 240v are kept as short as possible and way from Wemos and dimmer control board as I found dimming was affected** (possible due to the capacitive effects of the mains voltage wires)
+* Build the circuit on a breadboard 
+* Download the code, compile and upload code to Wemos D1
+* Test everything works as expected
+* Take a wooden block and hollow insides to fit components
+* Arrange all the components into the cavity **(ensure that wires carrying 240v are kept as short as possible and away from the Wemos and dimmer control board as brightness control can be affected**
 
 ## How to use
 
-The lamp has 2 modes: Alexa (default) and standalone.  To change the mode, power cycle the lamp whilst holding the rotary encoder push switch down until the lamp slowly flashes.  The number of flashes is to let you know which mode the lamp is currently in.  1 flash indicates standalone and 2 flashes is Alexa mode.
+The lamp has 2 modes: Alexa (default) and standalone.  To change the mode, power cycle the 240v supply whilst holding the rotary encoder push switch down until the lamp slowly flashes.  The number of flashes seen will tell you which mode the lamp is in.  1 flash indicates standalone and 2 flashes for Alexa voice controlled mode.
 
 ### Alexa mode (default)
+
 * When the lamp is turned on for the first time it will create an unsecured wifi hotspot called Lamp
 * You can use your phone to connect to the hotspot and enter your wifi network credentials
 * Once your credentials are verified, the hotspot will disappear and your settings will be stored
@@ -45,7 +47,7 @@ The lamp has 2 modes: Alexa (default) and standalone.  To change the mode, power
 * Plain old lamp
 * Rotary encoder works straight away
 
-### Alexa voice control
+## Alexa voice controls
 
 Once setup, you can use different ways to invoke Alexa to modify the lamp's state:
 
