@@ -64,3 +64,15 @@ Once setup, you can use different ways to invoke Alexa to modify the lamp's stat
 
 ![Lamp looking cool](images/lamp1.jpg)
 ![Lamp looking cool](images/lamp3.jpg)
+
+# Credits
+
+Developed on a WeMos D1 mini clone, using Arduino IDE 1.6.5 with ESP8266 Core 2.3.0
+
+This project would not have been possible without the kind development of others on GitHub!  Click on a name to see the authors' GitHub page
+
+* [Fauxmoesp (Xose Pérez, Ben Hencke)](https://github.com/simap)
+* [Encoder (Paul Stoffregen)](https://github.com/PaulStoffregen)
+* [WifiManager (tzapu)](https://github.com/tzapu)
+* [JC_Button (Jack Christensen)](https://github.com/JChristensen)
+* [Dimmable-Light-Arduino (Fabiano Riccardi)](https://github.com/fabiuz7)
