@@ -26,7 +26,7 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 * Download the code, compile and upload code to Wemos D1
 * Test everything works as expected
 * Take a wooden block and hollow insides to fit components
-* Arrange all the components into the cavity **(ensure that wires carrying 240v are kept as short as possible and away from the Wemos and dimmer control board as brightness control can be affected**
+* Arrange all the components into the cavity but **ensure that wires carrying 240v are kept as short as possible and away from the Wemos and dimmer control board as brightness control can be affected**
 
 ## How to use
 
