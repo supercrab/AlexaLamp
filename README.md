@@ -3,14 +3,29 @@ This project is to create a lamp with Alexa voice control where you can also cha
 
 ![Lamp looking cool](images/lamp2.jpg)
 
-## Hardware:
+## Components
 
 * Wemos D1 Mini
 * HLK-PM01 AC-DC 220V to 5v mini power supply module
 * Robotdyn AC Light Dimmer Module (https://robotdyn.com/ac-light-dimmer-module-1-channel-3-3v-5v-logic-ac-50-60hz-220v-110v.html)
 * KY-040 rotary encoder with push switch
+* Bulb holder and fittings
+* MF-A03 control knob
+* Power cord and plug 
 
-![Project schematic](images/schematic.png)
+![Components](images/components.jpg)
+
+## Electronic Schematic
+
+![Schematic](images/schematic.png)
+
+## Instructions
+
+* Build circuit on a breadboard 
+* Compile and upload code to Wemos D1
+* Test everything works
+* Take a wooden block and hollow out
+* Put all the components into the cavity but **ensure wires carrying 240v are away from Wemos and dimmer control board because it will affect dimming** 
 
 ## How to use
 
