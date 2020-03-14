@@ -22,11 +22,17 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 
 ## Instructions
 
-* Build the circuit on a breadboard 
-* Download the code, compile and upload code to Wemos D1
+* Build the circuit on a breadboard
+* Download and install the following Arduino libraries
+	* [Fauxmoesp (Xose Pérez, Ben Hencke)](https://github.com/simap/fauxmoesp)
+	* [Encoder (Paul Stoffregen)](https://github.com/PaulStoffregen/Encoder)
+	* [WifiManager (tzapu)](https://github.com/tzapu/WiFiManager)
+	* [JC_Button (Jack Christensen)](https://github.com/JChristensen/JC_Button)
+	* [Dimmable-Light-Arduino (Fabiano Riccardi)](https://github.com/fabiuz7/Dimmable-Light-Arduino)
+* Download the AlexaLamp code, compile and upload code to Wemos D1
 * Test everything works as expected
-* Take a wooden block and hollow insides to fit components
-* Arrange all the components into the cavity but **ensure that wires carrying 240v are kept as short as possible and away from the Wemos and dimmer control board as brightness control can be affected**
+* Take a wooden block and hollow out the inside to make space for the components
+* Arrange all the components in the cavity and **ensure that wires carrying 240v are kept as short as possible and away from the Wemos and dimmer control board as brightness control can be affected**
 
 ## How to use
 
