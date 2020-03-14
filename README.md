@@ -25,7 +25,7 @@ This project is to create a lamp with Alexa voice control where you can also cha
 * Compile and upload code to Wemos D1
 * Test everything works
 * Take a wooden block and hollow out
-* Put all the components into the cavity but **ensure wires carrying 240v are away from Wemos and dimmer control board because it will affect dimming** 
+* Arrange all the components into the cavity but **ensure wires carrying 240v are kept as short as possible and way from Wemos and dimmer control board as I found dimming was affected** (possible due to the capacitive effects of the mains voltage wires)
 
 ## How to use
 
