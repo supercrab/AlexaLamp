@@ -14,11 +14,15 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 * MF-A03 control knob
 * Power cord and plug 
 
-![Components](images/components.jpg)
+![Project components](images/components.jpg)
 
 ## Electronic Schematic
 
-![Schematic](images/schematic.png)
+![Project schematic](images/schematic.png)
+
+## Enclosure
+
+![Project enclosure](images/enclosure.png)
 
 ## Instructions
 
