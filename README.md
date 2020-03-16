@@ -1,18 +1,19 @@
 # AlexaLamp
 
-This project was to create an Alexa voice controlled lamp with adjustable brightness.  The lamp can also be illuminated and brightness adjusted using a rotary encoder with push switch.
+This project was to create an Alexa voice controlled lamp with adjustable brightness.  The lamp can be turned on or off and the brightness adjusted by usinng a rotary encoder with push switch.
 
 ![Lamp looking cool](images/lamp2.jpg)
 
 ## Components
 
-* Wemos D1 Mini
-* HLK-PM01 AC-DC 220V to 5v mini power supply module
+* [Wemos D1 Mini](https://wiki.wemos.cc/products:d1:d1_mini)
+* [HLK-PM01 AC-DC 220V to 5v mini power supply module](http://www.hlktech.net/product_detail.php?ProId=54)
 * Robotdyn AC Light Dimmer Module (https://robotdyn.com/ac-light-dimmer-module-1-channel-3-3v-5v-logic-ac-50-60hz-220v-110v.html)
-* KY-040 rotary encoder with push switch
-* Bulb holder and fittings
-* MF-A03 control knob
-* Power cord and plug 
+* [KY-040 rotary encoder with push switch](https://uk.pi-supply.com/products/rotary-encoder-push-switch)
+* [Vintage E27 bulb holder ceramic](https://www.ebay.co.uk/itm/Vintage-E27-Bulb-Holder-Ceramic-Industrial-Lamp-Lighting-Antique-Retro-Edison/253903670767) and fittings
+* [MF-A03 control knob](https://www.google.com/search?q=MF-a03)
+* [2 core twisted cable](https://www.ebay.co.uk/itm/2-Core-Twist-Braided-Fabric-Cable-Vintage-Electric-Wire-Flexible-Lighting-Cord/312959065511)
+* UK plug 
 
 ![Project components](images/components.jpg)
 
@@ -33,7 +34,7 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 
 ## Instructions
 
-* Build the circuit on a breadboard
+* Build the circuit on a breadboard **be careful with the 240v side - turn it**
 * Download and install the following Arduino libraries
 	* [Fauxmoesp (Xose Pérez, Ben Hencke)](https://github.com/simap/fauxmoesp)
 	* [Encoder (Paul Stoffregen)](https://github.com/PaulStoffregen/Encoder)
@@ -43,7 +44,6 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 * Download the AlexaLamp code, compile and upload code to Wemos D1
 * Test everything works as expected
 * Make the circuit permenant by installing into your wooden block or whatever space you have.
-
 
 ## How to use
 
