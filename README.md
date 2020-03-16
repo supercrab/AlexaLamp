@@ -22,6 +22,13 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 
 ## Enclosure
 
+* The enclosure is made up of 2 parts: a wooden block (roughly 4 inches by 3 inches) and a planed wood base that screws into the block
+* The wooden block is hollowed out so that there is enough space for all the components
+* The components were arrange inside the cavity **ensuring that wires carrying 240v were kept as short as possible and away from the Wemos and dimmer control board.  It was found that brightness control can be affected if the high voltage wires are close**
+* I used a cloth and applied 3 coats of [Liberon based wood dye dark oak](https://www.screwfix.com/p/liberon-ethanol-based-wood-dye-dark-oak-250ml/3102f)
+* I then applied another 3 coats of [Liberon superior Danish oil clear](https://www.screwfix.com/c/decorating/wood-oil/cat850452)
+* Once I certain everything worked, the wooden base was screwed into the block and [felt pads](https://www.toolstation.com/felt-gard-felt-pad-set/p95753) were used to hide the screws 
+
 ![Project enclosure](images/enclosure.png)
 
 ## Instructions
@@ -35,8 +42,8 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 	* [Dimmable-Light-Arduino (Fabiano Riccardi)](https://github.com/fabiuz7/Dimmable-Light-Arduino)
 * Download the AlexaLamp code, compile and upload code to Wemos D1
 * Test everything works as expected
-* Take a wooden block and hollow out the inside to make space for the components
-* Arrange all the components in the cavity and **ensure that wires carrying 240v are kept as short as possible and away from the Wemos and dimmer control board as brightness control can be affected**
+* Make the circuit permenant by installing into your wooden block or whatever space you have.
+
 
 ## How to use
 
