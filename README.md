@@ -10,11 +10,13 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 * [Wemos D1 Mini](https://wiki.wemos.cc/products:d1:d1_mini)
 * [HLK-PM01 AC-DC 220V to 5v mini power supply module](http://www.hlktech.net/product_detail.php?ProId=54)
 * Robotdyn AC Light Dimmer Module (https://robotdyn.com/ac-light-dimmer-module-1-channel-3-3v-5v-logic-ac-50-60hz-220v-110v.html)
-* [KY-040 rotary encoder with push switch](https://uk.pi-supply.com/products/rotary-encoder-push-switch)
+* [Rotary encoder with push switch](https://uk.pi-supply.com/products/rotary-encoder-push-switch) or [KY-040 rotary encoder module](https://uk.banggood.com/KY-040-Rotary-Decoder-Encoder-Module-AVR-PIC-p-914010.html)
 * [Vintage E27 bulb holder ceramic](https://www.ebay.co.uk/itm/Vintage-E27-Bulb-Holder-Ceramic-Industrial-Lamp-Lighting-Antique-Retro-Edison/253903670767) and fittings
 * [MF-A03 control knob](https://www.google.com/search?q=MF-a03)
 * [2 core twisted cable](https://www.ebay.co.uk/itm/2-Core-Twist-Braided-Fabric-Cable-Vintage-Electric-Wire-Flexible-Lighting-Cord/312959065511)
 * UK plug 
+
+**Shop around for the components as you can get some good deals if you buy from China/Banggood**
 
 ![Project components](images/components.jpg)
 
