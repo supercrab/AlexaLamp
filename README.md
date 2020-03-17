@@ -6,6 +6,7 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 
 ## Components
 
+* Amazon Alexa (for testing but not mandatory as the lamp has a standalone mode)
 * [Wemos D1 Mini](https://wiki.wemos.cc/products:d1:d1_mini)
 * [HLK-PM01 AC-DC 220V to 5v mini power supply module](http://www.hlktech.net/product_detail.php?ProId=54)
 * Robotdyn AC Light Dimmer Module (https://robotdyn.com/ac-light-dimmer-module-1-channel-3-3v-5v-logic-ac-50-60hz-220v-110v.html)
@@ -42,21 +43,32 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 	* [JC_Button (Jack Christensen)](https://github.com/JChristensen/JC_Button)
 	* [Dimmable-Light-Arduino (Fabiano Riccardi)](https://github.com/fabiuz7/Dimmable-Light-Arduino)
 * Download the AlexaLamp code, compile and upload code to Wemos D1
-* Test everything works as expected
+* Test everything works as expected (see below for how to setup wifi and change modes)
 * Make the circuit permenant by installing into your wooden block or whatever space you have.
 
 ## How to use
 
-The lamp has 2 modes: Alexa (default) and standalone.  To change the mode, power cycle the 240v supply whilst holding the rotary encoder push switch down until the lamp slowly flashes.  The number of flashes seen will tell you which mode the lamp is in.  1 flash indicates standalone and 2 flashes for Alexa voice controlled mode.
+The lamp has 2 modes; Alexa (default) and standalone.  
+
+To change the mode:
+
+* Turn off the 240v supply to the lamp
+* Hold the rotary encoder push switch down
+* Turn on 240v supply
+* Wait until the lamp starts to slowly flash
+* Release the push switch
+* The number of flashes seen will tell you which mode the lamp is in.  1 flash indicates standalone and 2 flashes for Alexa voice controlled mode.
 
 ### Alexa mode (default)
 
 * When the lamp is turned on for the first time it will create an unsecured wifi hotspot called Lamp
 * You can use your phone to connect to the hotspot and enter your wifi network credentials
-* Once your credentials are verified, the hotspot will disappear and your settings will be stored
+* Once your credentials are verified, the hotspot will disappear and your wifi settings will be stored on the device
 * The lamp will now connect to your network and you will be able to control the lamp using the rotary encoder
-* Say "Alexa, discover devices" or go to the Alexa app, hit "Add Device", "Other", "Discover devices"
-* If the lamp cannot connect to a network using its stored settings, it will create a new hotspot and wait for the new credentials (when not connected to wifi the rotary encoder will not work)
+* Say "Alexa, discover devices" or go to the Alexa app and hit "Add Device", "Other", "Discover devices"
+* Your lamp is now ready!
+
+**If you turn on the 240v supply to the lamp and it cannot connect to a network using its stored settings, it will create a new hotspot and wait for new credentials.  While it is in this state the rotary encoder will not work until the new wifi credentials are entered but tou can still change the lamp's mode using the method described above.**
 
 ### Standalone mode
 
