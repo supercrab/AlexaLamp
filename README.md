@@ -22,13 +22,13 @@ This project was to create an Alexa voice controlled lamp with adjustable bright
 
 ![Project schematic](images/schematic.png)
 
-## Enclosure
+## Wooden Enclosure
 
-* The enclosure is made up of 2 parts: a wooden block (roughly 4 inches by 3 inches) and a planed wood base that screws into the block
+* The enclosure is made up of 2 parts: a wooden block (roughly 4 inches by 3 inches) and a planed wood base that screws into the block and locks the electronics away
 * The wooden block is hollowed out so that there is enough space for all the components
-* The components were arrange inside the cavity **ensuring that wires carrying 240v were kept as short as possible and away from the Wemos and dimmer control board.  It was found that brightness control can be affected if the high voltage wires are close**
-* I used a cloth and applied 3 coats of [Liberon based wood dye dark oak](https://www.screwfix.com/p/liberon-ethanol-based-wood-dye-dark-oak-250ml/3102f)
-* I then applied another 3 coats of [Liberon superior Danish oil clear](https://www.screwfix.com/c/decorating/wood-oil/cat850452)
+* The components are arrange inside the cavity **ensuring that wires carrying 240v were kept as short as possible and away from the Wemos and dimmer control board.  It was found that brightness control was affected if the high voltage wires got too close**
+* A cloth was used to apply 3 coats of [Liberon based wood dye dark oak](https://www.screwfix.com/p/liberon-ethanol-based-wood-dye-dark-oak-250ml/3102f) to give some colour.  You can also use [Liberon based wood dye light oak](https://www.screwfix.com/p/liberon-ethanol-based-wood-dye-light-oak-250ml/8322F) or mix them both dyes to create a new shade
+* A cloth was used to apply 3 coats of [Liberon superior Danish oil clear](https://www.screwfix.com/c/decorating/wood-oil/cat850452) which gave the wood a slight shine and made it slightly waterproof
 * Once I certain everything worked, the wooden base was screwed into the block and [felt pads](https://www.toolstation.com/felt-gard-felt-pad-set/p95753) were used to hide the screws 
 
 ![Project enclosure](images/enclosure.png)
