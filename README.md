@@ -111,3 +111,9 @@ This project would not have been possible without the kind development of others
 * [WifiManager (tzapu)](https://github.com/tzapu)
 * [JC_Button (Jack Christensen)](https://github.com/JChristensen)
 * [Dimmable-Light-Arduino (Fabiano Riccardi)](https://github.com/fabiuz7)
+
+# Futre Improvements
+
+* OTA updates
+* Check if the wifi has dropped out periodically and reconnect
+
