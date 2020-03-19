@@ -22,11 +22,14 @@ Here is a list of the essential components you will need.  Shop around for the c
 
 ### Optional
 
-These depend on how you are going to mount your bulb to your enclosure.
+These depend on how you are going to mount your bulb and what finish you fancy for your enclosure.
 
 * [M10 hollow threaded rod](https://lightingspares.co.uk/collections/threaded-rods)
 * [M10 threaded nut](https://lightingspares.co.uk/products/oaks-oa16-metal-10mm-threaded-nut)
 * [M10 penny washer](https://www.toolstation.com/penny-washer/p90716)
+* [Liberon based wood dye dark oak](https://www.screwfix.com/p/liberon-ethanol-based-wood-dye-dark-oak-250ml/3102f)
+* [Liberon superior Danish oil clear](https://www.screwfix.com/c/decorating/wood-oil/cat850452)
+* [Felt pads](https://www.toolstation.com/felt-gard-felt-pad-set/p95753)
 
 ![Project components](images/components.jpg)
 
