@@ -1,6 +1,6 @@
 # AlexaLamp
 
-This project was to create an Alexa voice controlled lamp with adjustable brightness.  The lamp can be turned on or off and the brightness adjusted by usinng a rotary encoder with push switch or using Alexa voice control.
+This project was to create an Alexa voice controlled lamp with adjustable brightness. The lamp can also controlled using a rotary encoder with built in push switch.
 
 ![Lamp looking cool](images/lamp2.jpg)
 
