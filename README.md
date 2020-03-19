@@ -47,7 +47,7 @@ These depend on how you are going to mount your bulb to your enclosure.
 
 ## Instructions
 
-* Build the circuit on a breadboard **be careful with the 240v side - turn it**
+* Build the circuit on a breadboard **be careful with the 240v side - turn it off when not in use**
 * Download and install the following Arduino libraries
 	* [Fauxmoesp (Xose Pérez, Ben Hencke)](https://github.com/simap/fauxmoesp)
 	* [Encoder (Paul Stoffregen)](https://github.com/PaulStoffregen/Encoder)
