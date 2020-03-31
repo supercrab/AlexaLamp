@@ -91,7 +91,7 @@ To change the mode:
 * Plain old lamp
 * Rotary encoder works straight away
 
-## Alexa voice controls
+### Alexa voice controls
 
 Once setup, you can use different ways to invoke Alexa to modify the lamp's state:
 
@@ -102,6 +102,11 @@ Once setup, you can use different ways to invoke Alexa to modify the lamp's stat
 
 ![Lamp looking cool](images/lamp1.jpg)
 ![Lamp looking cool](images/lamp3.jpg)
+
+### Admin web server
+
+* There is a secret, backdoor web server that lists device information such as uptime, brightness, lamp state and such (handy for debugging)
+* You can use a network discovery program to find the IP address and point your browser to it on port 81, e.g. `http:\\192.168.1.20:81` 
 
 # Credits
 
@@ -118,5 +123,3 @@ This project would not have been possible without the kind development of others
 # Futre Improvements
 
 * OTA updates
-* Check if the wifi has dropped out periodically and reconnect
-
