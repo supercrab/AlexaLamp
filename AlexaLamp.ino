@@ -71,10 +71,7 @@
 #define SERIAL_BAUDRATE 115200
 // Admin port for admin web page
 #define ADMIN_WEB_PORT 81
-// Initial lamp brightness when turned on for the first time
-#define INITIAL_BRIGHTNESS 255
-// How often should we check wifi is connected? (0 = never check)
-#define WIFI_CONNECTED_CHECK_MINS 1
+
 // Device name for Alexa and also access point name for WifiManager
 #define DEVICE_NAME     "Lamp"
 
@@ -94,30 +91,13 @@
 // Encode B pin 
 #define ENCODER_B_PIN	D7
 
-// How sensitive the encoder is 
-// (1 = slowest, higher means more change)
-#define ENCODER_SENSITIVITY 2
-
 fauxmoESP fauxmo;
 DimmableLight light(TRIAC_PIN);
 Encoder encoder(ENCODER_A_PIN, ENCODER_B_PIN);
 Button button(ENCODER_SWITCH_PIN);
 SoftwareTimer timer;
 AdminWebServer server(ADMIN_WEB_PORT);
-
-// Configuration settings boy
-Config config = {
-	// Enable wifi mode (default is true)
-	.wifi = true,
-	// Lamp state
-	.state = false,
-	// Initial lamp brightness when turned on for the first time
-	.brightness = INITIAL_BRIGHTNESS,
-	// Encoder sensitivity
-	.encoderSensitivity = ENCODER_SENSITIVITY,
-	// How often to check wifi is connected
-	.wifiCheckInterval = WIFI_CONNECTED_CHECK_MINS
-};
+Config config;
 
 // Pulse the light 
 void pulseLight(uint8_t times = 1){
@@ -135,32 +115,6 @@ void pulseLight(uint8_t times = 1){
 			delay(6);
 		}
 	}
-}
-
-// Read any settings from EEPROM
-void readSettings(){
-	// Initialise EEPROM
-	EEPROM.begin(512);
-	// check for previous settings 
-	if (EEPROM.read(0) == 'L' && EEPROM.read(1) == 'A' && EEPROM.read(2) == 'M' && EEPROM.read(3) == 'P'){
-		config.wifi = EEPROM.read(4);
-		Serial.printf("Lamp settings: found in EEPORM. Wifi enabled: %s\n", config.wifi ? "YES" : "NO" );
-	}
-	else{
-		Serial.println("Lamp settings: none found in EEPROM. Using defaults!");
-	}
-}
-
-// Store our settings
-void saveSettings(){
-	// Write our special string
-	EEPROM.write(0, 'L');    
-	EEPROM.write(1, 'A');   
-	EEPROM.write(2, 'M');
-	EEPROM.write(3, 'P');
-	EEPROM.write(4, config.wifi);
-	EEPROM.commit();
-	Serial.printf("Lamp settings: saved wifi enabled: %s\n", config.wifi ? "YES" : "NO" );
 }
 
 // Callback when connecting to previous WiFi fails
@@ -198,7 +152,7 @@ void setupButton(){
 
 // Setup rotary encoder
 void setupRotaryEncoder(){
-	encoder.write(config.brightness / config.encoderSensitivity);
+	encoder.write(config.getBrightness() / config.getEncoderSensitivity());
 }
 
 // Setup dimmer
@@ -241,12 +195,12 @@ void setupFauxmo(){
 		// Otherwise comparing the device_name is safer.
 		if (strcmp(device_name, DEVICE_NAME) == 0) {
 			// Store lamp state brightness	
-			config.state = device_state;
-			config.brightness = value;
+			config.setState(device_state);
+			config.setBrightness(value);
 			// Set lamp brightness
-			light.setBrightness(config.state ? config.brightness : 0);
+			light.setBrightness(config.getState() ? config.getBrightness() : 0);
 			// Set the rotary encolder value to current brightness
-			encoder.write(config.brightness / config.encoderSensitivity);
+			encoder.write(config.getBrightness() / config.getEncoderSensitivity());
 		} 
 	});
 
@@ -255,8 +209,7 @@ void setupFauxmo(){
 
 // Setup webserver
 void setupWebServer(){
-	server.setConfig(&config);
-	server.begin();
+	server.begin(&config);
 }
 
 // Setup a timer to periodically check wifi status
@@ -275,7 +228,7 @@ void setupCheckWifiTimer(){
 			Serial.println("OK");
 		}
 	});
-	timer.setIntervalMins(config.wifiCheckInterval); 
+	timer.setIntervalMins(config.getWifiCheckInterval()); 
 	timer.start();
 }
 
@@ -289,8 +242,6 @@ void setup() {
 	Serial.println();
 	Serial.println();
 
-	// Read previous settings
-	readSettings();
 	// Button setup
 	setupButton();
 	// Dimmer setup
@@ -298,18 +249,18 @@ void setup() {
 
 	// Change mode?
 	if (button.read()){
-		// Flip setting
-		config.wifi = !config.wifi;
+		// Flip wifi mode
+		config.invertWifi();
 		// Save setting
-		saveSettings();
+		config.save();
 		// Pulse lamp (twice = wifi on, once = wifi off)
-		pulseLight(config.wifi ? 2 : 1);
+		pulseLight(config.getWifi() ? 2 : 1);
 		// Clear the previous button press!
 		setupButton();
 	}
 
 	// Is lamp in Wifi mode?
-	if (config.wifi) {
+	if (config.getWifi()) {
 		// Setup wifi manager
 		setupWifiManager();
 		// Setup fauxmo
@@ -330,7 +281,7 @@ void setup() {
 void loop() {
 
 	// Is the lamp in WiFi mode?
-	if (config.wifi){
+	if (config.getWifi()){
 		// Periodically check if Wifi is connected 
 		timer.handle();
 		// fauxmoESP uses an async TCP server but a sync UDP server
@@ -346,30 +297,29 @@ void loop() {
 	// Turn lamp on or off if button has been pressed
 	if (button.wasPressed()){
 		// Flip lamp state
-		config.state = !config.state;
+		config.invertState();
 		// Set the brightness!
-		light.setBrightness(config.state ? config.brightness : 0);
+		light.setBrightness(config.getState() ? config.getBrightness() : 0);
 		// Reset rotary encoder to current brightness
 		// (this prevents rotary encoder affecting brightness when lamp is off)
-		encoder.write(config.brightness / config.encoderSensitivity);
+		encoder.write(config.getBrightness() / config.getEncoderSensitivity());
 		// Broadcast lamp state
-		if (config.wifi){
-			fauxmo.setState(DEVICE_NAME, config.state, config.brightness);
+		if (config.getWifi()){
+			fauxmo.setState(DEVICE_NAME, config.getState(), config.getBrightness());
 		}
-		Serial.printf("Button pressed! State: %s value: %d\n", config.state ? "ON " : "OFF", config.brightness);
+		Serial.printf("Button pressed! State: %s value: %d\n", config.getState() ? "ON " : "OFF", config.getBrightness());
 	}
 
 	// If lamp is on allow rotary encoder to change brightness
-	if (config.state){
+	if (config.getState()){
 		// Previous encoder value
 		static int16_t encoderOldValue = 0;
 		// Calculate new value with sensitivity factor
-		int16_t encoderNewValue = encoder.read() * config.encoderSensitivity;
-
+		int16_t encoderNewValue = encoder.read() * config.getEncoderSensitivity();
 		// Enforce rotary encoder maximum value
 		if (encoderNewValue > 255){
 			encoderNewValue = 255;
-			encoder.write(encoderNewValue / config.encoderSensitivity);
+			encoder.write(encoderNewValue / config.getEncoderSensitivity());
 		}
 		// Enforce rotary encoder minimum value
 		else if (encoderNewValue < 0){
@@ -379,12 +329,12 @@ void loop() {
 		// Rotary encoder has changed so change brightness
 		if (encoderNewValue != encoderOldValue) {
 			encoderOldValue = encoderNewValue;
-			config.brightness = encoderNewValue;
+			config.setBrightness(encoderNewValue);
 			// Set lamp brightness
-			light.setBrightness(config.brightness);
+			light.setBrightness(config.getBrightness());
 			// Broadcast lamp state
-			if (config.wifi) {
-				fauxmo.setState(DEVICE_NAME, true, config.brightness);
+			if (config.getWifi()) {
+				fauxmo.setState(DEVICE_NAME, true, config.getBrightness());
 			}
 		}
 	}

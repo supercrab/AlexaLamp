@@ -1,14 +1,16 @@
 #include "AdminWebServer.h"
 
 // Start the webserver
-void AdminWebServer::begin(){
+void AdminWebServer::begin(Config* config){
+	_config = config;
 	_server.begin();
 }
 
 // Pass application config into web server
+/*
 void AdminWebServer::setConfig(Config* config){
 	_config = config;
-}
+}*/
 
 // Retrieve uptime formatted
 char* AdminWebServer::getUptime(){
@@ -52,11 +54,11 @@ bool AdminWebServer::handle(){
 			HTTP_PAGE_RESPONSE,
 			WiFi.SSID().c_str(),
 			getUptime(),
-			_config->state ? "On" : "Off",
-			_config->brightness,
-			_config->wifi ? "Wifi" : "Standalone",
-			_config->encoderSensitivity,
-			_config->wifiCheckInterval
+			_config->getState() ? "On" : "Off",
+			_config->getBrightness(),
+			_config->getWifi() ? "Wifi" : "Standalone",
+			_config->getEncoderSensitivity(),
+			_config->getWifiCheckInterval()
 		);
 		client.print(response);
 		Serial.println(" Served page!");

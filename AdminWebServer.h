@@ -34,8 +34,7 @@ PROGMEM const char HTTP_FAVICON_RESPONSE[] =
 class AdminWebServer{
 	public:
 		AdminWebServer(uint16_t port) : _server(port){}
-		void begin();
-		void setConfig(Config* config);
+		void begin(Config* config);
 		bool handle();
 	private:
 		char* getUptime();
