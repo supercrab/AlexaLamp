@@ -83,7 +83,7 @@ To change the mode:
 * Say "Alexa, discover devices" or go to the Alexa app and hit "Add Device", "Other", "Discover devices"
 * Your lamp is now ready!
 
-**If you turn on the 240v supply to the lamp and it cannot connect to a network using its stored settings, it will create a new hotspot and wait for new credentials.  While it is in this state the rotary encoder will not work until the new wifi credentials are entered but tou can still change the lamp's mode using the method described above.**
+**If you connect the lamp to the mains and it cannot connect to a network using its stored settings, it will create a new hotspot and wait for new credentials.  While it is in this state the rotary encoder will not work until the new wifi credentials are entered.  You can still change the lamp's mode using the method described above.**
 
 ### Standalone mode
 
