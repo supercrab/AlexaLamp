@@ -124,5 +124,5 @@ This project would not have been possible without the kind development of others
 
 # Futre Improvements
 
-* Web form to change config
-* OTA updates
+* Web form to change lamp config
+* Over The Air (OTA) updates
