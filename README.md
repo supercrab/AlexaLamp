@@ -37,6 +37,8 @@ These depend on how you are going to mount your bulb and what finish you fancy f
 
 ![Project schematic](images/schematic.png)
 
+**NOTE: the direction that the rotary encoder affects lamp brightness can be reversed by swapping digital inputs 6 & 7**
+
 ## Wooden Enclosure
 
 * The enclosure is made up of 2 parts: a wooden block (roughly 4 inches by 3 inches) and a planed wood base that screws into the block and locks the electronics away
