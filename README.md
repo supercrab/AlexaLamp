@@ -18,7 +18,7 @@ Here is a list of the essential components you will need.  Shop around for the c
 * [Vintage E27 bulb holder ceramic](https://www.ebay.co.uk/itm/Vintage-E27-Bulb-Holder-Ceramic-Industrial-Lamp-Lighting-Antique-Retro-Edison/253903670767) (you could use a bayonet holder if you wanted)
 * [MF-A03 control knob](https://www.google.com/search?q=MF-a03)
 * [2 core twisted cable](https://www.ebay.co.uk/itm/2-Core-Twist-Braided-Fabric-Cable-Vintage-Electric-Wire-Flexible-Lighting-Cord/312959065511)
-* 240v/mains plug 
+* [240v/mains plug](https://www.ebay.co.uk/sch/i.html?_odkw=13A+BLACK+plug&_nkw=13A+fused+BLACK+plug)
 
 ### Optional
 
