@@ -2,6 +2,7 @@
 #define Config_h
 
 #include <Arduino.h>
+#include <EEPROM.h>
 
 // Initial lamp brightness when turned on for the first time
 #define INITIAL_BRIGHTNESS 255

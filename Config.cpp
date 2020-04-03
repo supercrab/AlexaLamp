@@ -1,4 +1,3 @@
-#include <EEPROM.h>
 #include "Config.h"
 
 // Load config settings from EEPROM

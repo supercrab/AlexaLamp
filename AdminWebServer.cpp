@@ -1,16 +1,10 @@
 #include "AdminWebServer.h"
 
-// Start the webserver
+// Start the webserver and take config
 void AdminWebServer::begin(Config* config){
 	_config = config;
 	_server.begin();
 }
-
-// Pass application config into web server
-/*
-void AdminWebServer::setConfig(Config* config){
-	_config = config;
-}*/
 
 // Retrieve uptime formatted
 char* AdminWebServer::getUptime(){

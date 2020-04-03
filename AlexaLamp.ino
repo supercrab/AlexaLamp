@@ -1,18 +1,18 @@
-/*	____ _    ____ _  _ ____       _    ____ _  _ ___  
- *	|__| |    |___  \/  |__|       |    |__| |\/| |__] 
- *	|  | |___ |___ _/\_ |  |       |___ |  | |  | |    
- *				with brightness control
- *
- *	by Supercrab
- *	https://github.com/supercrab
- *
- *	Developed on a WeMos D1 mini clone, using Arduino IDE 1.6.5 with ESP8266 Core 2.3.0
- *
- *	This project would not have been possible without the kind development of others on GitHub!
- */
+//	____ _    ____ _  _ ____       _    ____ _  _ ___  
+//	|__| |    |___  \/  |__|       |    |__| |\/| |__] 
+//	|  | |___ |___ _/\_ |  |       |___ |  | |  | |    
+//				with brightness control
+//
+//	by Supercrab
+//	https://github.com/supercrab
+//
+//	Developed on a WeMos D1 mini clone, using Arduino IDE 1.6.5 with ESP8266 Core 2.3.0
+//
+//	Thanks to the developers of the libraries I found on GitHub!
 
-// For this and that, me and you
+// For my love of uint8_t
 #include <Arduino.h>
+// For saving/loading config
 #include <EEPROM.h>
 
 // ---------------------------------------------------------
@@ -66,19 +66,16 @@
 // ---------------------------------------------------------
 // Software settings
 // ---------------------------------------------------------
-
 // Serial baudrate 
 #define SERIAL_BAUDRATE 115200
 // Admin port for admin web page
 #define ADMIN_WEB_PORT 81
-
 // Device name for Alexa and also access point name for WifiManager
 #define DEVICE_NAME     "Lamp"
 
 // ---------------------------------------------------------
 // Hardware settings
 // ---------------------------------------------------------
-
 // Zero cross detection pin
 #define ZERO_CROSS_PIN	D1
 // Triac pin 
@@ -167,35 +164,17 @@ void setupDimmer(){
 
 // Setup fauxmo library
 void setupFauxmo(){
-	// By default, fauxmoESP creates it's own webserver on the defined port
-	// The TCP port must be 80 for gen3 devices (default is 1901)
-	// This has to be done before the call to enable()
-	fauxmo.createServer(true); // not needed, this is the default value
-	fauxmo.setPort(80); // This is required for gen3 devices
-	// You have to call enable(true) once you have a WiFi connection
-	// You can enable or disable the library at any moment
-	// Disabling it will prevent the devices from being discovered and switched
+	fauxmo.createServer(true); 
+	fauxmo.setPort(80); // for Gen3 devices
 	fauxmo.enable(true);
-	// You can use different ways to invoke alexa to modify the devices state:
-	// "Alexa, turn yellow lamp on"
-	// "Alexa, turn on yellow lamp
-	// "Alexa, set yellow lamp to fifty" (50 means 50% of brightness, note, this example does not use this functionality)
-	
 	// Add virtual device
 	fauxmo.addDevice(DEVICE_NAME);
-	fauxmo.onSetState([](unsigned char device_id, const char * device_name, bool device_state, unsigned char value){
-		// Callback when a command from Alexa is received. 
-		// You can use device_id or device_name to choose the element to perform an action onto (relay, LED,...)
-		// State is a boolean (ON/OFF) and value a number from 0 to 255 (if you say "set kitchen light to 50%" you will receive a 128 here).
-		// Just remember not to delay too much here, this is a callback, exit as soon as possible.
-		// If you have to do something more involved here set a flag and process it in your main loop.
-		Serial.printf("Fauxmo: Device ID #%d (%s) state: %s value: %d\n", device_id, device_name, device_state ? "ON " : "OFF", value);
-
-		// Checking for device_id is simpler if you are certain about the order they are loaded and it does not change.
-		// Otherwise comparing the device_name is safer.
-		if (strcmp(device_name, DEVICE_NAME) == 0) {
+	// Lamda expresison to handle lamp control  
+	fauxmo.onSetState([](unsigned char deviceId, const char* deviceName, bool deviceState, unsigned char value){
+		Serial.printf("Fauxmo: Device ID #%d (%s) state: %s value: %d\n", deviceId, deviceName, deviceState ? "ON " : "OFF", value);
+		if (strcmp(deviceName, DEVICE_NAME) == 0) {
 			// Store lamp state brightness	
-			config.setState(device_state);
+			config.setState(deviceState);
 			config.setBrightness(value);
 			// Set lamp brightness
 			light.setBrightness(config.getState() ? config.getBrightness() : 0);
@@ -203,7 +182,6 @@ void setupFauxmo(){
 			encoder.write(config.getBrightness() / config.getEncoderSensitivity());
 		} 
 	});
-
 	Serial.println("Fauxmo: started!");
 }
 
