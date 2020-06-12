@@ -1,45 +1,54 @@
 #ifndef AdminWebServer_h
 #define AdminWebServer_h
 
-#include <ESP8266WebServer.h>
+#include <ESPAsyncWebServer.h>
+
 #include "Common.h"
-#include "Favicon.h"
 #include "Config.h"
+#include "StringStream.h"
 
-// HTTP page response
-PROGMEM const char HTTP_PAGE_RESPONSE[] = 
-	"HTTP/1.1 200 OK\r\n"
-	"Content-Type: text/html\r\n\r\n"
-	"<!DOCTYPE HTML>\r\n"
-	"<html>\r\n"
-	"<h1>Alexa Lamp</h1>\r\n"
-	"<table>\r\n"
-	"<tr><td>SSID</td><td>%s</td></tr>\r\n" 
-	"<tr><td>Uptime</td><td>%s</td></tr>\r\n" 
-	"<tr><td>State</td><td>%s</td></tr>\r\n"
-	"<tr><td>Brightness</td><td>%d</td></tr>\r\n"
-	"<tr><td>Mode</td><td>%s</td></tr>\r\n"
-	"<tr><td>Encoder sensitivity</td><td>%d</td></tr>\r\n"
-	"<tr><td>Wifi check</td><td>%d mins</td></tr>\r\n"
-	"</table>\r\n"
-	"</html>\n";
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
 
-// HTTP favicon response
-PROGMEM const char HTTP_FAVICON_RESPONSE[] = 
-	"HTTP/1.1 200 OK\r\n"
-	"Content-Length: %d\r\n"
-	"Content-Type: image/x-icon\r\n\r\n";  //x-icon
+#include "Favicon.h"
+#include "HtmlUpdatingPage.h"
+#include "HtmlFormElements.h"
+#include "HtmlAboutPage.h"
+#include "HtmlHomePage.h"
+#include "HtmlUpdateErrorPage.h"
+#include "HtmlUpdatePage.h"
+#include "HtmlErrorPage.h"
+#include "HtmlSettingsPage.h"
 
-// Class to serve a basic web server
+// Html for selected option in form select element
+const char* const HTML_SELECTED = "selected";
+
+// Length of selected option 
+const uint8_t HTML_SELECTED_LENGTH = strlen(HTML_SELECTED);
+
+// Number of characters an integer value in an input element can take
+const uint8_t HTML_VALUE_LENGTH = 4; // 3 digits + null
+
+// Simple JSON response
+const char JSON_SETTING_RESPONSE[] PROGMEM = R"rawliteral({"value":%d})rawliteral";
+
+// Administration web server
 class AdminWebServer{
+	
 	public:
 		AdminWebServer(uint16_t port) : _server(port){}
 		void begin(Config* config);
-		bool handle();
+		void end();
+
 	private:
-		char* getUptime();
-		WiFiServer _server;
+		AsyncWebServer _server;
 		Config* _config;
+		String _getStrFromEndOfString(const String s);
+		int16_t _getIntFromEndOfString(const String s);
+		const char* _getVersion();
+		const char* _getJSONsettingIntResponse(const uint8_t value);
+		const char* _getUptime();
+		bool _systemUpdatingRedirect(AsyncWebServerRequest *request);
 };
 
 #endif
