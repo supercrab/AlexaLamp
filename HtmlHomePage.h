@@ -78,13 +78,13 @@ const char HTML_HOME_PAGE[] PROGMEM = R"rawliteral(
 		$.getJSON(
 			"/rest/state",
 			function(data) {
-				if (data.value===0){
+				if (data.value === 0){
 					$("#state-off").removeClass("btn-outline-primary");
 					$("#state-off").addClass("btn-primary");
 					$("#state-on").removeClass("btn-primary");
 					$("#state-on").addClass("btn-outline-primary");
 				}
-				if (data.value===1){
+				if (data.value === 1){
 					$("#state-on").removeClass("btn-outline-primary");
 					$("#state-on").addClass("btn-primary");
 					$("#state-off").removeClass("btn-primary");
@@ -126,6 +126,7 @@ const char HTML_HOME_PAGE[] PROGMEM = R"rawliteral(
 				if (stateChange) populateState();
 			},
 			error: function(jq, status, error){
+				if (!error) error = 'could not access lamp!';
 				alertError(error);
 			}
 		});
