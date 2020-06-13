@@ -102,7 +102,7 @@ const char HTML_UPDATING_PAGE[] PROGMEM = R"rawliteral(
 
 					if (obj.status == status.IDLE){
 						$("#message-title").text("Firmware update finished");
-						$("#message-text").text("Your device has been successfully updated!");
+						$("#message-text").text("Your device has been successfully updated and is ready to use!");
 					}
 					else{
 						$("#message-title").text("Firmware was not updated");
