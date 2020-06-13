@@ -108,7 +108,7 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 				if (data){
 					if (data.success === true){
 						if (data.response === true){
-							displayResult("<a href='/updatenow' class='btn btn-success'>Firmware Update Available!</a>");
+							displayResult("<a href='/updatenow' class='btn btn-success'>Click here to upgrade!</a>");
 						}
 						else{
 							$("#update-info").addClass("alert alert-success");
