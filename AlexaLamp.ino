@@ -601,11 +601,13 @@ void loop() {
 		// Enforce rotary encoder maximum value
 		if (encoderNewValue > 255){
 			encoderNewValue = 255;
+			encoder.write(encoderNewValue);	
 		}
 
 		// Enforce rotary encoder minimum value
 		else if (encoderNewValue < 0){
 			encoderNewValue = 0;
+			encoder.write(encoderNewValue);	
 		}
 
 		// Rotary encoder has changed so change brightness
