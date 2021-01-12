@@ -42,7 +42,7 @@ const char HTML_HOME_PAGE[] PROGMEM = R"rawliteral(
 
 <div class="jumbotron text-center">
 	<h1>Alexa Lamp</h1>
-	<div>Here you can control your lamp</div> 
+	<div>Control your lamp</div> 
 </div>
 
 <div class="container">  

@@ -6,11 +6,19 @@
 //	by Supercrab
 //	https://github.com/supercrab
 //
-//	Developed on a WeMos D1 mini clone, using Arduino IDE 1.8.1 with ESP8266 Core 2.7.1
+//	Developed on a WeMos D1 mini clone, using Arduino IDE 1.8.1 with ESP8266 Core 2.7.4
+//
+//  This code is intended to work on cheap ESP8266 devices
 //
 //	Thanks to the developers of the libraries I found on GitHub!
 //
-
+// TODO
+// ====
+// 
+// * MDNS seems to be flakey especially after you setup wifi using the automatic hotspot
+//   hopefully fixed in a newer version of the ESP8266 core
+// * Fauxmo - when 2 devices have the same Alexa name and you browse to the device on port 80, it causes a restart
+//
 // ---------------------------------------------------------
 // Main configuration
 // ---------------------------------------------------------
@@ -75,6 +83,17 @@ Config config;
 
 // Previous encoder value
 int16_t encoderOldValue = 0;
+
+// Initialise serial port and communications
+void setupSerial(){
+	Serial.begin(SERIAL_BAUDRATE);
+	Serial.println();
+	Serial.println();
+	Serial.println(F("-----------------------------------"));
+	Serial.println(F("Application started"));
+	Serial.println(F("-----------------------------------"));
+	Serial.println();
+}
 
 // Callback for when remote update starts
 void remoteUpdateStarted() {
@@ -180,12 +199,21 @@ void pulseLight(uint8_t times = 1){
 	}
 }
 
-// Setup hostname and MAC adddress
-void setupHostname(){
+// Setup the MAC address
+// Notes: if this is done too late it will cause the device to reconnect so best done early 
+void setupMACAddress(){
+
+	Serial.println(F("WIFI: setting up MAC address"));
 
 	// MAC address is also used as a device identifier when updating
 	uint8_t mac[6] {170, 186, 190, 170, 250, 206}; // AA:BA:BE:AA:FA:CE
 	wifi_set_macaddr(STATION_IF, mac);
+}
+
+// Setup hostname
+void setupHostname(){
+
+	Serial.print(F("WIFI: setting up hostname: ")); Serial.println(HOSTNAME);
 
 	// Set the network host name
 	WiFi.hostname(HOSTNAME);
@@ -194,7 +222,7 @@ void setupHostname(){
 // Callback when connecting to previous WiFi fails
 void wifiManagerCallback(AsyncWiFiManager *myWiFiManager) {
 
-	Serial.println("Entered config mode");
+	Serial.println(F("WIFI: entered configuration mode, creating access point"));
 	Serial.println(WiFi.softAPIP());
 	Serial.println(myWiFiManager->getConfigPortalSSID());
 }
@@ -202,47 +230,46 @@ void wifiManagerCallback(AsyncWiFiManager *myWiFiManager) {
 // Setup MDNS
 void setupMDNS(){
 
+	MDNS.close();
+
 	// Try and give us a name MDNS
+	Serial.print(F("MDNS: setting up host as: ")); Serial.println(HOSTNAME);
 	if (!MDNS.begin(HOSTNAME)) {
-		Serial.println(F("MDNS: error setting up MDNS responder!"));
+		Serial.println(F("MDNS: failed"));
 	}
 	else{
+		// Broadcast our http web server on admin port
+		MDNS.addService("http", "tcp", ADMIN_WEB_PORT);
+
 		Serial.println(F("MDNS: OK!"));
 	}
-
-	// Broadcast our http web server on admin port
-	MDNS.addService("http", "tcp", ADMIN_WEB_PORT);
 }
 
 // Setup Wifi
 void setupWifiManager() {
 
+	Serial.println(F("WIFI: starting connection manager"));
+
 	// AsyncWiFiManager intialization. Once its business is done, there is no need to keep it around
 	AsyncWiFiManager wifiManager;
 
-	//set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
+	// set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
 	wifiManager.setAPCallback(wifiManagerCallback);
 
 	// fetches ssid and pass and tries to connect
 	// if it does not connect it starts an access point with the specified name
 	// and goes into a blocking loop awaiting configuration
-	if (!wifiManager.autoConnect(HOSTNAME)) {
+	if (!wifiManager.autoConnect(ACCESS_POINT_NAME)){
 
-		Serial.println("Failed to connect and hit timeout");
+		Serial.println(F("WIFI: failed to connect and hit timeout"));
 
-		//reset and try again, or maybe put it to deep sleep
+		// reset and try again, or maybe put it to deep sleep
 		ESP.restart();
 		delay(1000);
 	} 
 	else {
 		// The wifi manager has connected us!
-		Serial.printf("Wifi connected!  SSID: %s, IP address: %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-
-		// Setup MSDNS
-#ifdef ENABLE_MDNS
-		setupMDNS();
-#endif
-
+		Serial.printf("WIFI: OK!  SSID: %s, IP address: %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
 	}
 }
 
@@ -273,7 +300,7 @@ void setupFauxmo(){
 
 	fauxmo.createServer(true); 
 	fauxmo.setPort(80); // for Gen3 devices
-	fauxmo.setRedirect(ADMIN_WEB_PORT);
+	fauxmo.setRedirect(ADMIN_WEB_PORT); // custom method to direct HTTP traffic on port 80 to custom port
 	fauxmo.enable(true);
 
 	// Add virtual device
@@ -302,7 +329,7 @@ void setupFauxmo(){
 		} 
 	});
 
-	Serial.print(F("FAUXMO: initiated device name: "));
+	Serial.print(F("FAUXMO: initiated device called: "));
 	Serial.println(config.getDeviceName());
 }
 
@@ -413,7 +440,7 @@ void updateAlexa(){
 	}
 }
 
-// Update settings
+// Update settings - called when web server adjusts settings
 void updateSettings(){
 
 	// Update light just in case state or brightness has been changed
@@ -429,17 +456,21 @@ void updateSettings(){
 		fauxmo.renameDevice((byte) 0, config.getDeviceName());
 	}
 	else {
+
+		// Prevent WIFI auto connecting when device is restarted
+		WiFi.setAutoConnect(false);
+
 		// Disable timers
 		timerWifiCheck.stop();
 		timerAutomaticUpdate.stop();
 
-		// Close web services
+		// Stop fauxmo
 		fauxmo.enable(false);
 
 #ifdef ENABLE_MDNS
+		// Stop MDNS
 		MDNS.close();
 #endif
-
 		// Destroy web server
 		server.end();
 	}
@@ -456,18 +487,18 @@ void invertEncoder(){
 // ---------------------------------------------------------
 void setup() {
 
+	// This line disables the automatic ESP access point, e.g. ESP-xxxxx
+	WiFi.mode(WIFI_STA);
+
 	// https://github.com/me-no-dev/ESPAsyncWebServer/issues/716
-	// ISSUE: using char arrays causes rests
+	// ISSUE: using char arrays causes resets
 	// FIX: prevent re-use of the OS stack
 	disable_extra4k_at_link_time();
 
-	// Init serial port and clean garbage
-	Serial.begin(SERIAL_BAUDRATE);
-	Serial.println();
-	Serial.println();
+	setupSerial();
 
-	// Setup mac and hostname
-	setupHostname();
+	// Initialse/load settings from EEPROM
+	config.begin();
 
 	// Button setup
 	setupButton();
@@ -479,9 +510,6 @@ void setup() {
 	config.onLightChanged(updateLight);
 	config.onSettingsChanged(updateSettings);
 	config.onEncoderInverted(invertEncoder);
-	
-	// Initialse/load settings from EEPROM
-	config.begin();
 
 	// Change mode?
 	if (button.read()){
@@ -489,10 +517,15 @@ void setup() {
 		// Flip wifi mode
 		config.toggleMode();
 
-		// Save this single setting
+		// Save the settings
 		config.save();
 
-		// Pulse light (twice = wifi on, once = wifi off)
+		// If WIFI has been disabled then prevent WIFI auto connecting when device is restarted
+		if (config.getMode() != WIFI){
+			WiFi.setAutoConnect(false);
+		}
+
+		// Pulse light to (twice = wifi on, once = wifi off)
 		pulseLight(config.getMode() == WIFI ? 2 : 1);
 
 		// Clear the previous button press!
@@ -502,8 +535,21 @@ void setup() {
 	// Is light in Wifi mode?
 	if (config.getMode() == WIFI) {
 
+		Serial.println(F("WIFI: starting setup"));
+
+		// Setup MAC address and hostname
+		setupMACAddress();
+		setupHostname();
+
 		// Setup wifi manager
 		setupWifiManager();
+
+#ifdef ENABLE_MDNS
+		// Setup MSDNS
+		// This takes a couple of minutes to work if the Wifi manager has been invoked
+		// and the device has just configure to connect to a new WIFI network
+		setupMDNS();
+#endif
 
 		// Setup fauxmo
 		setupFauxmo();
@@ -517,6 +563,9 @@ void setup() {
 		// Setup automatic update check
 		setupAutomaticUpdateTimer();
 	}
+	else {
+		Serial.println(F("WIFI: disabled"));
+	}
 
 	// Setup rotary encoder (this caused issues when called sooner)
 	setupRotaryEncoder();
@@ -526,6 +575,7 @@ void setup() {
 		updateLight();
 	}
 
+	Serial.println(F("SETUP: finished"));
 }
 
 // Set the encoder value depending on current brightness and encoder inverted setting
@@ -542,8 +592,8 @@ void setEncoderValue(){
 void loop() {
 
 	// Do we need to reboot the system after a firmware upload or reboot call?
+	// Reboot needs to be called from outside of the web request handling
 	if (config.getRebootSystem()){
-		// Reboot needs to be called from outside of the web request handling
 		rebootSystem();
 	}
 

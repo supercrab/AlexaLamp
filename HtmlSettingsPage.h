@@ -37,7 +37,7 @@ const char HTML_SETTINGS_PAGE[] PROGMEM = R"rawliteral(
 
 <div class="jumbotron text-center">
 	<h1>Alexa Lamp</h1>
-	<div>Here you can change your lamp settings</div> 
+	<div>Change your lamp's settings</div> 
 </div>
 
 <div class="container">  

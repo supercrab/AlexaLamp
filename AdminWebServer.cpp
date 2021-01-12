@@ -88,6 +88,10 @@ const char* AdminWebServer::_getUptime(){
 void AdminWebServer::begin(Config* config){
 	_config = config;
 
+	// ------------------------------------------------------------------
+	// HTML pages
+	// ------------------------------------------------------------------
+
 	// Homepage
 	_server.on(PSTR("/"), HTTP_GET, [this](AsyncWebServerRequest *request){
 
@@ -95,6 +99,8 @@ void AdminWebServer::begin(Config* config){
 		if (_systemUpdatingRedirect(request)){
 			return;
 		}
+
+		// Display normal home page
 		char html[HTML_VALUE_LENGTH + strlen_P(HTML_HOME_PAGE)];
 		snprintf_P(
 			html, sizeof(html),
@@ -341,10 +347,9 @@ void AdminWebServer::begin(Config* config){
 		request->send(response);
 	});
 
-
-// ------------------------------------------------------------------
-// REST
-// ------------------------------------------------------------------
+	// ------------------------------------------------------------------
+	// REST
+	// ------------------------------------------------------------------
 
 	// Get state
 	_server.on(PSTR("/rest/state"), HTTP_GET, [this](AsyncWebServerRequest *request){
@@ -398,7 +403,8 @@ void AdminWebServer::begin(Config* config){
 		request->send(response);
 	});
 
-	// Update settings by using PUT with JSON data in body content
+	// Update settings by using PUT with JSON data in body content, e.g.
+	// {"name":"aaaaabbbbbcccccdddddeeeeefffffgh","mode":1,"invert":false,"sensitivity":2,"wificheckinterval":11,"automaticupdates":false}
 	_server.on(PSTR("/rest/settings"), HTTP_PUT,
 
 		// Handle the http response (called last)	
@@ -411,69 +417,88 @@ void AdminWebServer::begin(Config* config){
 		NULL, 
 		// Body content callback - called first & the HTTP response is handled in the first callback
 		[this](AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+			static char buffer[140];
 
-			// Deserialise the JSON
-			StaticJsonDocument<200> jdoc;
-			DeserializationError error = deserializeJson(jdoc, (const char*) data);
-			JsonObject doc = jdoc.as<JsonObject>();
-
-			// Stop if there are any errors with deserialisation
-			if (error) {
-				Serial.print(F("JSON: deserialization error: "));
-				Serial.println(error.c_str());
-				request->send(400);
-				return;
+			// Clear buffer when first chunk of body is received
+			if (!index){
+				buffer[0] = 0;
 			}
 
-			// Check that name is a pointer to a string
-			if (doc["name"].is<char*>()){
-				if (strlen(doc["name"]) > 0){
-					char name[_config->getDeviceNameLength()];
-					strncpy(name, doc["name"], sizeof(name));
-					_config->setDeviceName(name);
+			// Add any received chunks of body to buffer
+			strncat(buffer, (const char*) data, len);
+
+			// Have received last packet of data?
+			if (index + len == total){
+
+				// Terminate data
+				buffer[total] = 0;
+
+				// Output received JSON
+				Serial.printf("JSON RECEIVED: %s\n", buffer);
+
+				// Deserialise the JSON
+				StaticJsonDocument<200> jdoc;
+				DeserializationError error = deserializeJson(jdoc, buffer);
+				JsonObject doc = jdoc.as<JsonObject>();
+
+				// Stop if there are any errors with deserialisation
+				if (error) {
+					Serial.print(F("JSON: deserialization error: "));
+					Serial.println(error.c_str());
+					request->send(400);
+					return;
 				}
-			}
 
-			// Check that state is boolean
-			if (doc["state"].is<bool>()){
-				_config->setState(doc["state"]);
-			}
+				// Check that name is a pointer to a string
+				if (doc["name"].is<char*>()){
+					if (strlen(doc["name"]) > 0){
+						char name[_config->getDeviceNameLength()];
+						strncpy(name, doc["name"], sizeof(name));
+						_config->setDeviceName(name);
+					}
+				}
 
-			// Check brightness is uint
-			if (doc["brightness"].is<uint8_t>()){
-				_config->setBrightness(doc["brightness"]);
-			}
+				// Check that state is boolean
+				if (doc["state"].is<bool>()){
+					_config->setState(doc["state"]);
+				}
 
-			// Check mode is uint
-			if (doc["mode"].is<uint8_t>()) {
-				_config->setMode(doc["mode"] == 0 ? STANDALONE : WIFI);
-			}
+				// Check brightness is uint
+				if (doc["brightness"].is<uint8_t>()){
+					_config->setBrightness(doc["brightness"]);
+				}
 
-			// Check that invert is a bool
-			if (doc["invert"].is<bool>()) {
-				_config->setEncoderInverted(doc["invert"]);
-			}
+				// Check mode is uint
+				if (doc["mode"].is<uint8_t>()) {
+					_config->setMode(doc["mode"] == 0 ? STANDALONE : WIFI);
+				}
 
-			// Check that sensitivity is uint
-			if (doc["sensitivity"].is<uint8_t>()) {
-				if (doc["sensitivity"] <= 6)
-					_config->setEncoderSensitivity(doc["sensitivity"]);
-			}
-			// Check that wifi check interval is uint
-			if (doc["wificheckinterval"].is<uint8_t>()) {
-				if (doc["wificheckinterval"] <= 60)
-					_config->setWifiCheckInterval(doc["wificheckinterval"]);
-			}
+				// Check that invert is a bool
+				if (doc["invert"].is<bool>()) {
+					_config->setEncoderInverted(doc["invert"]);
+				}
 
-			// Check automatic updates is a boolean
-			if (doc["automaticupdates"].is<bool>()){
-				_config->setAutomaticUpdates(doc["automaticupdates"]);
+				// Check that sensitivity is uint
+				if (doc["sensitivity"].is<uint8_t>()) {
+					if (doc["sensitivity"] <= 6)
+						_config->setEncoderSensitivity(doc["sensitivity"]);
+				}
+				// Check that wifi check interval is uint
+				if (doc["wificheckinterval"].is<uint8_t>()) {
+					if (doc["wificheckinterval"] <= 60)
+						_config->setWifiCheckInterval(doc["wificheckinterval"]);
+				}
+
+				// Check automatic updates is a boolean
+				if (doc["automaticupdates"].is<bool>()){
+					_config->setAutomaticUpdates(doc["automaticupdates"]);
+				}
+
+				// Update settings in main thread and save
+				_config->updateSettings();
+
+				Serial.println(F("JSON: settings updated!"));
 			}
-
-			// Update settings in main thread and save
-			_config->updateSettings();
-
-			Serial.println(F("JSON: settings updated!"));
 		}
 	);
 
@@ -555,14 +580,12 @@ void AdminWebServer::begin(Config* config){
 
 	// Start asynch web server!
 	_server.begin();
-
 	Serial.println(F("WEB SERVER: started"));
 }
 
 // Close the server
 void AdminWebServer::end(){
 	_server.end();
-
 	Serial.println(F("WEB SERVER: stopped"));
 }
 
@@ -574,6 +597,7 @@ bool AdminWebServer::_systemUpdatingRedirect(AsyncWebServerRequest *request){
 
 		// Serve up updating page
 		request->send_P(200, F("text/html"), HTML_UPDATING_PAGE);
+
 		return true;
 	}
 

@@ -38,7 +38,7 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 
 <div class="jumbotron text-center">
 	<h1>Update Firmware</h1>
-	<div>Here you can check for updates and upgrade your lamp's firmware</div> 
+	<div>Check for updates and upgrade your firmware</div> 
 </div>
 
 <div class="container">

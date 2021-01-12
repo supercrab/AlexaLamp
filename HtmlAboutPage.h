@@ -37,7 +37,7 @@ const char HTML_ABOUT_PAGE[] PROGMEM = R"rawliteral(
 
 <div class="jumbotron text-center">
 	<h1>About</h1>
-	<div>Information about this system</div> 
+	<div>Information about the system</div> 
 </div>
 
 <div class="container text-center">

@@ -1,6 +1,10 @@
 #ifndef Common_h
 #define Common_h
 
+// ---------------------------------------------------------
+// Macros
+// ---------------------------------------------------------
+
 // Macro for calculating array length
 #define ARRAY_LENGTH(array) (sizeof((array))/sizeof((array)[0]))
 
@@ -60,7 +64,10 @@
 // Software settings - should not need changing
 // ---------------------------------------------------------
 
-// Enable MDNS - you can turn this off if you don't want the overhead 
+// Enable MDNS
+// The local URL for accessing the web config is http://alexa-lamp.local
+// Running MDNS creates extra processing for the MDNS traffic
+// If you're not bothered by having a MDNS name for the device then comment out this line
 #define ENABLE_MDNS
 
 // Serial baudrate 
@@ -72,8 +79,11 @@
 // Define how many characters the device's alexa name can be
 #define ALEXA_NAME_LENGTH	32
 
-// Network hostname, MDNS name.local and access point name for WifiManager
+// Network hostname, MDNS name.local
 #define HOSTNAME	"alexa-lamp"
+
+// Access point created to configure Wifi settings
+#define ACCESS_POINT_NAME "alexa-lamp-connect"
 
 // Number of hours to check for automatic updates
 #define AUTO_UPDATE_CHECK_PERIOD_HOURS 24
