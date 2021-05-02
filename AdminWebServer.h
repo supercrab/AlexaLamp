@@ -1,6 +1,7 @@
 #ifndef AdminWebServer_h
 #define AdminWebServer_h
 
+// https://github.com/me-no-dev/ESPAsyncWebServer
 #include <ESPAsyncWebServer.h>
 
 #include "Common.h"
@@ -46,8 +47,8 @@ class AdminWebServer{
 		String _getStrFromEndOfString(const String s);
 		int16_t _getIntFromEndOfString(const String s);
 		const char* _getVersion();
-		const char* _getJSONsettingIntResponse(const uint8_t value);
-		const char* _getUptime();
+		const char* _getJsonSettingIntResponse(const uint8_t value);
+		const char* _getUpTime();
 		bool _systemUpdatingRedirect(AsyncWebServerRequest *request);
 };
 

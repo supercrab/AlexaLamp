@@ -15,6 +15,7 @@
 // TODO
 // ====
 // 
+// * Lamp flickers with values < 100, this seems to be down to the newer ESP core
 // * MDNS seems to be flakey especially after you setup wifi using the automatic hotspot
 //   hopefully fixed in a newer version of the ESP8266 core
 // * Fauxmo - when 2 devices have the same Alexa name and you browse to the device on port 80, it causes a restart
@@ -25,6 +26,8 @@
 #include "Common.h"
 
 // ---------------------------------------------------------
+//  * Fauxmoesp (vintlabs)
+//  https://github.com/vintlabs/fauxmoESP
 //	* Fauxmoesp redirect functionality (Enrico A.)
 //	https://bitbucket.org/xoseperez/fauxmoesp/issues/101/fauxmoesp-with-esp8266webserver
 // ---------------------------------------------------------
@@ -233,14 +236,15 @@ void setupMDNS(){
 	MDNS.close();
 
 	// Try and give us a name MDNS
-	Serial.print(F("MDNS: setting up host as: ")); Serial.println(HOSTNAME);
+	Serial.print(F("MDNS: setting up host as ")); 
+	Serial.print(HOSTNAME);
+	Serial.println(F(".local"));
 	if (!MDNS.begin(HOSTNAME)) {
 		Serial.println(F("MDNS: failed"));
 	}
 	else{
 		// Broadcast our http web server on admin port
 		MDNS.addService("http", "tcp", ADMIN_WEB_PORT);
-
 		Serial.println(F("MDNS: OK!"));
 	}
 }
@@ -374,7 +378,7 @@ void setupAutomaticUpdateTimer(){
 	timerAutomaticUpdate.setCallback([](void){
 
 		// Check update - if update does occur the system is automatically restarted
-		Serial.println("AUTO UPDATE: checking!");
+		Serial.println(F("AUTO UPDATE: checking!"));
 		updateSystem();
 	});
 
@@ -392,7 +396,7 @@ void rebootSystem(){
 	server.end();
 	
 	// Wait for web connections to stop
-	delay(500);
+	delay(250);
 
 	// Restart
 	ESP.restart();

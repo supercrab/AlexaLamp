@@ -2,7 +2,7 @@
 
 FAUXMO ESP
 
-Copyright (C) 2016-2018 by Xose Pérez <xose dot perez at gmail dot com>
+Copyright (C) 2016-2020 by Xose Pérez <xose dot perez at gmail dot com>
 
 The MIT License (MIT)
 
@@ -33,6 +33,7 @@ THE SOFTWARE.
 #define FAUXMO_TCP_MAX_CLIENTS      10
 #define FAUXMO_TCP_PORT             1901
 #define FAUXMO_RX_TIMEOUT           3
+#define FAUXMO_DEVICE_UNIQUE_ID_LENGTH  12
 
 //#define DEBUG_FAUXMO                Serial
 #ifdef DEBUG_FAUXMO
@@ -68,14 +69,16 @@ THE SOFTWARE.
 #include <WiFiUdp.h>
 #include <functional>
 #include <vector>
+#include <MD5Builder.h>
 #include "fauxmoTemplates.h"
 
-typedef std::function<void(byte, const char *, bool, unsigned char)> TSetStateCallback;
+typedef std::function<void(unsigned char, const char *, bool, unsigned char)> TSetStateCallback;
 
 typedef struct {
     char * name;
     bool state;
     unsigned char value;
+    char uniqueid[28];
 } fauxmoesp_device_t;
 
 class fauxmoESP {
@@ -84,15 +87,16 @@ class fauxmoESP {
 
         ~fauxmoESP();
 
-        byte addDevice(const char * device_name);
-        bool renameDevice(byte id, const char * device_name);
+        unsigned char addDevice(const char * device_name);
+        bool renameDevice(unsigned char id, const char * device_name);
         bool renameDevice(const char * old_device_name, const char * new_device_name);
-        bool removeDevice(byte id);
+        bool removeDevice(unsigned char id);
         bool removeDevice(const char * device_name);
-        char * getDeviceName(byte id, char * buffer, size_t len);
-        byte getDeviceId(const char * device_name);
+        char * getDeviceName(unsigned char id, char * buffer, size_t len);
+        int getDeviceId(const char * device_name);
+        void setDeviceUniqueId(unsigned char id, const char *uniqueid);
         void onSetState(TSetStateCallback fn) { _setCallback = fn; }
-        bool setState(byte id, bool state, unsigned char value);
+        bool setState(unsigned char id, bool state, unsigned char value);
         bool setState(const char * device_name, bool state, unsigned char value);
         bool process(AsyncClient *client, bool isGet, String url, String body);
         void enable(bool enable);
@@ -116,7 +120,7 @@ class fauxmoESP {
         AsyncClient * _tcpClients[FAUXMO_TCP_MAX_CLIENTS];
         TSetStateCallback _setCallback = NULL;
 
-        String _deviceJson(byte id);
+        String _deviceJson(unsigned char id, bool all); 	// all = true means we are listing all devices so use full description template
 
         void _handleUDP();
         void _onUDPData(const IPAddress remoteIP, unsigned int remotePort, void *data, size_t len);
@@ -130,4 +134,6 @@ class fauxmoESP {
         bool _onTCPControl(AsyncClient *client, String url, String body);
         void _sendTCPResponse(AsyncClient *client, const char * code, char * body, const char * mime);
 
+        String _byte2hex(uint8_t zahl);
+        String _makeMD5(String text);
 };

@@ -145,19 +145,21 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 				xhr.upload.addEventListener("progress", function(evt) {
 					if (evt.lengthComputable) {
 						var per = evt.loaded / evt.total;
-						$("#progress-message").html("Progress: " + Math.round(per*100) + "%");
-						$(".progress-bar").css("width", Math.round(per*100) + "%");
-						if (per == 1) $('#wait-popup').modal('show');
+						$("#progress-message").html("Progress: " + Math.round(per*100) + "%%");
+						$(".progress-bar").css("width", Math.round(per*100) + "%%");
+						if (per == 1){ 
+							$('#wait-popup').modal('show');
+						}
 					}
 				}, false);
-			return xhr;
+				return xhr;
 			}, 
 			success: function(d, s) {
 				console.log("File uploaded!");
-				
 				$("body").html(d);
 			},
 			error: function(a, b, c) {
+				console.log("error!");
 			}
 		});
 	});

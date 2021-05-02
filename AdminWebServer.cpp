@@ -33,7 +33,7 @@ const char* AdminWebServer::_getVersion(){
 	strcpy_P(timestamp, PSTR(__TIME__));
 	timestamp[2] = timestamp[3];
 	timestamp[3] = timestamp[4];
-	timestamp[4] = '\0';
+	timestamp[4] = 0;
 
 	// Copy year to new string
 	strcpy_P(buffer, PSTR(__DATE__));
@@ -41,16 +41,16 @@ const char* AdminWebServer::_getVersion(){
 	year[1] = buffer[8];
 	year[2] = buffer[9];
 	year[3] = buffer[10];
-	year[4] = '\0';
+	year[4] = 0;
 	
 	// Copy day to a new string
 	day[0] = buffer[4];
 	day[1] = buffer[5];
-	day[2] = '\0';
+	day[2] = 0;
 	dayInt = atoi(day);
 
 	// Shove a null to mark the end of the month
-	buffer[3] = '\0';
+	buffer[3] = 0;
 
 	// Get the month number
 	monthInt = (strstr(monthNames, buffer) - monthNames)/3+1;
@@ -62,7 +62,7 @@ const char* AdminWebServer::_getVersion(){
 }
 
 // Return JSON response when a setting has ben updated
-const char* AdminWebServer::_getJSONsettingIntResponse(const uint8_t value){
+const char* AdminWebServer::_getJsonSettingIntResponse(const uint8_t value){
 	static char buffer[16]; // Has to be hard coded length because it's a static variable
 
 	snprintf_P(buffer, sizeof(buffer), JSON_SETTING_RESPONSE, value);
@@ -71,7 +71,7 @@ const char* AdminWebServer::_getJSONsettingIntResponse(const uint8_t value){
 }
 
 // Retrieve uptime formatted
-const char* AdminWebServer::_getUptime(){
+const char* AdminWebServer::_getUpTime(){
 	static char buffer[43]; // xxxx days, xx hours, xx mins, xx seconds
 
 	uint32_t sec = millis() / 1000;
@@ -209,7 +209,7 @@ void AdminWebServer::begin(Config* config){
 		if (_systemUpdatingRedirect(request)){
 			return;
 		}
-		const char* uptime = _getUptime();
+		const char* uptime = _getUpTime();
 
 		// Create array for our html
 		char html[
@@ -270,20 +270,21 @@ void AdminWebServer::begin(Config* config){
 		// Respond to the posted file (done last after file has been uploaded)
 		[this](AsyncWebServerRequest *request){
 			char html[strlen_P(HTML_UPDATE_ERROR_PAGE) + 128];
+			bool reboot = false;
 			AsyncWebServerResponse *response;
 
 			// The HTML form prevents us from submitting a blank file but it would still
 			// be treated as a valid choice be the updater and no error would occur
 			if (!Update.hasError()){
 
+				// Flag for telling app that we need to reboot
+				reboot = true;
+
 				// Set the update status and message
 				_config->setUpdateStatusOK();
 
-				// We reboot outside the lamda function because it's cleaner
-				_config->setRebootSystem();
-
 				// Start response
-				response = request->beginResponse(200, F("text/html"), HTML_UPDATING_PAGE);	
+				response = request->beginResponse_P(200, F("text/html"), HTML_UPDATING_PAGE);
 			}
 			else{
 				// Create a stream to retrieve the error message
@@ -304,8 +305,15 @@ void AdminWebServer::begin(Config* config){
 				// Start response
 				response = request->beginResponse(200, F("text/html"), html); 
 			}
+
+			// Send the response to client
 			response->addHeader(F("Connection"), F("close"));
 			request->send(response);
+
+			// Flag the system for reboot which is done in the main loop because it's cleaner
+			if (reboot){
+				_config->setRebootSystem();
+			}
 		},
 		// Handle file upload (done first and is called multiple times)
 		[this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
@@ -332,7 +340,7 @@ void AdminWebServer::begin(Config* config){
 			// Final call - upload has finished
 			if (final){
 				if (Update.end(true)){
-					Serial.printf("Upload finished: %uB\n", index + len);
+					Serial.printf("Upload finished: %u bytes\n", index + len);
 				}
 				else {
 					Update.printError(Serial);
@@ -353,7 +361,7 @@ void AdminWebServer::begin(Config* config){
 
 	// Get state
 	_server.on(PSTR("/rest/state"), HTTP_GET, [this](AsyncWebServerRequest *request){
-		request->send(200, F("text/plain"), _getJSONsettingIntResponse(_config->getState()));
+		request->send(200, F("text/plain"), _getJsonSettingIntResponse(_config->getState()));
 	});
 
 	// Set state on
@@ -374,7 +382,7 @@ void AdminWebServer::begin(Config* config){
 
 	// Get brightness
 	_server.on(PSTR("/rest/brightness"), HTTP_GET, [this](AsyncWebServerRequest *request){
-		request->send(200, F("text/plain"), _getJSONsettingIntResponse(_config->getBrightness()));
+		request->send(200, F("text/plain"), _getJsonSettingIntResponse(_config->getBrightness()));
 	});
 
 	// Retrieve status of any current update operation
