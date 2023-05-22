@@ -6,8 +6,16 @@
 			"md5": "bbe73c61c25772937c108a766102a472",
 			"date": "27 Apr 2023",
 			"changes": [
-				"Initial release",
-				"More notes"
+				"Initial release"
+			]
+		},
+		{
+			"version": "20230522.2232",
+			"md5": "8c84a2d8c7b6ff5b6ea829ba8a11647e",
+			"date": "27 May 2023",
+			"changes": [
+				"Added upgrade system to provide release notes in the web interface",
+				"Tested out possible linear pwm brightness fixes"
 			]
 		}
 	]
