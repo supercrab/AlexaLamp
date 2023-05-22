@@ -3,6 +3,7 @@
 	"releases": [
 		{
 			"version": "20230427.1452",
+			"hash": "bbe73c61c25772937c108a766102a472",
 			"date": "27 Apr 2023",
 			"changes": [
 				"Initial release"
