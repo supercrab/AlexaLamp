@@ -1,15 +1,19 @@
 <?php
 
-// List of MAC addresses and what bin file is applicable
-// this allows bin filename to be changed BUT only if HTTP_X_ESP8266_VERSION header is set
+(new DumpHTTPRequestToFile)->execute('./log.txt');
+
+// This PHP files comes from the link below but has been modified
+//
+// https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html 
+
+
+// Database of devices and the firmware file for that device
 $db = array(
-	"AA:BA:BE:AA:FA:CE" => "AlexaLamp.ino"
+	"alexalamp" => "AlexaLamp.ino"
 );
 
-//(new DumpHTTPRequestToFile)->execute('./log.txt');
-
-if (check_variable("mac") && check_variable("md5")){
-	// If we have mac and md5 parameters then we return JSON
+if (check_variable("deviceid") && check_variable("md5")){
+	// If we have a device id and md5 parameters then we return JSON
 	ESPhttpUpdateCheck();
 }
 else{
@@ -22,9 +26,9 @@ function ESPhttpUpdateCheck(){
 	global $db;
 
 	// Was a binary file found?
-	$file = $db[$_GET['mac']];
+	$file = $db[$_GET['deviceid']];
 	if(!isset($file)) {
-		writeJson(false, false, "The supplied MAC is not configured for updates");
+		writeJson(false, false, "The supplied device is not configured for updates");
 		exit();
 	}
 
@@ -36,20 +40,31 @@ function ESPhttpUpdateCheck(){
 	}
 
 	// Check if the md5s are different
-	$update = $_GET["md5"] != md5_file($path);
+	$latestHash = md5_file($path);
+	$currentHash = $_GET["md5"];
 
-	// Generate user message depending on if there is an update available
-	if ($update)
+	if ($currentHash != $latestHash){
+		$md5 = $latestHash;
 		$message = "There is an update available";
-	else
+		$update = true;
+	}
+	else{
+		$md5 = $currentHash;
 		$message = "No updates are available";
+		$update = false;
+	}
 
 	// write json
-	writeJson(true, $update, $message);
+	writeJson(true, $update, $message, $md5);
 }
 
-function writeJson($success, $response, $message = ""){
-	$data = ['success' => $success, 'response' => $response, 'message' => $message];
+function writeJson($success, $response, $message, $md5){
+	$data = [
+		'success' => $success, 
+		'response' => $response, 
+		'message' => $message, 
+		'md5' => $md5
+	];
 	header('Access-Control-Allow-Origin: *');
 	header('Content-type: application/json');
 	print(json_encode($data));
@@ -86,9 +101,20 @@ function ESPhttpUpdate(){
 
 	if(!check_header('HTTP_USER_AGENT', 'ESP8266-http-Update')) {
 		header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden', true, 403);
-		echo "only for ESP8266 updater!\n";
+		echo "Invalid user agent!\n";
 		exit();
 	}
+
+	// [User-Agent] => ESP8266-http-Update
+	// [x-ESP8266-STA-MAC] => 18:FE:AA:AA:AA:AA
+	// [x-ESP8266-AP-MAC] => 1A:FE:AA:AA:AA:AA
+	// [x-ESP8266-free-space] => 671744
+	// [x-ESP8266-sketch-size] => 373940
+	// [x-ESP8266-sketch-md5] => a56f8ef78a0bebd812f62067daf1408a
+	// [x-ESP8266-chip-size] => 4194304
+	// [x-ESP8266-sdk-version] => 1.3.0
+	// [x-ESP8266-version] => DOOR-7-g14f53a19
+	// [x-ESP8266-mode] => sketch
 
 	// x-ESP8266-Chip-ID		String(ESP.getChipId()));
 	// x-ESP8266-STA-MAC		WiFi.macAddress());
@@ -99,6 +125,7 @@ function ESPhttpUpdate(){
 	// x-ESP8266-chip-size		String(ESP.getFlashChipRealSize()));
 	// x-ESP8266-sdk-version	ESP.getSdkVersion());
 	// x-ESP8266-version		This can be blank, if so then MD5 hash is used to determine update
+	// x-ESP8266-device-id      The device id
 	if(
 		!check_header('HTTP_X_ESP8266_STA_MAC') ||
 		!check_header('HTTP_X_ESP8266_AP_MAC') ||
@@ -106,20 +133,24 @@ function ESPhttpUpdate(){
 		!check_header('HTTP_X_ESP8266_SKETCH_SIZE') ||
 		!check_header('HTTP_X_ESP8266_SKETCH_MD5') ||
 		!check_header('HTTP_X_ESP8266_CHIP_SIZE') ||
-		!check_header('HTTP_X_ESP8266_SDK_VERSION')
+		!check_header('HTTP_X_ESP8266_SDK_VERSION') ||
+		!check_header('HTTP_X_ESP8266_DEVICE_ID')
 	) {
 		header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden', true, 403);
-		echo "only for ESP8266 updater! (header)\n";
+		echo "Missing headers!\n";
 		exit();
 	}
+
+	// Retrieve the firmware from the database
+	$firmware = $db[$_SERVER['HTTP_X_ESP8266_DEVICE_ID']];
 
 	// Was a binary file found?
-	if(!isset($db[$_SERVER['HTTP_X_ESP8266_STA_MAC']])) {
-		header($_SERVER["SERVER_PROTOCOL"].' 500 ESP MAC not configured for updates', true, 500);
+	if(!isset($firmware)) {
+		header($_SERVER["SERVER_PROTOCOL"].' 500 ESP device is not configured for updates', true, 500);
 		exit();
 	}
 
-	$localBinary = "./binaries/".$db[$_SERVER['HTTP_X_ESP8266_STA_MAC']].".bin";
+	$localBinary = "./binaries/{$firmware}.bin";
 
 	// Check the bin file exists!
 	if(!file_exists($localBinary)) {
@@ -130,17 +161,13 @@ function ESPhttpUpdate(){
 	// Check if version has been set and does not match, if not, check if
 	// MD5 hash between local binary and ESP8266 binary do not match if not.
 	// then no update has been found.
-	if ((!check_header('HTTP_X_ESP8266_SDK_VERSION') && $db[$_SERVER['HTTP_X_ESP8266_STA_MAC']] != $_SERVER['HTTP_X_ESP8266_VERSION'])
+	if ((!check_header('HTTP_X_ESP8266_SDK_VERSION') && $firmware != $_SERVER['HTTP_X_ESP8266_VERSION'])
 		|| $_SERVER["HTTP_X_ESP8266_SKETCH_MD5"] != md5_file($localBinary)) {
 		sendFile($localBinary);
-		exit();
 	}
 	else {
 		header($_SERVER["SERVER_PROTOCOL"].' 304 Not Modified', true, 304);
-		exit();
 	}
-
-	header($_SERVER["SERVER_PROTOCOL"].' 500 ESP MAC not configured for updates', true, 500);
 }
 
 // Logging class
@@ -158,7 +185,8 @@ class DumpHTTPRequestToFile {
 		$data .= "\nRequest body:\n";
 		file_put_contents(
 			$targetFile,
-			$data . file_get_contents('php://input') . "\n"
+			$data . file_get_contents('php://input') . "\n",
+			FILE_APPEND
 		);
 	}
 	private function getHeaderList() {
