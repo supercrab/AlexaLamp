@@ -1,0 +1,12 @@
+{
+	"application": "AlexaLamp",
+	"releases": [
+		{
+			"version": "20230427.1452",
+			"date": "27 Apr 2023",
+			"changes": [
+				"Initial release"
+			]
+		}
+	]
+}
