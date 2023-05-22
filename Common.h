@@ -96,7 +96,10 @@
 #define HTTP_UPDATE_SERVER "supercrab.co.uk"
 
 // Update path
-#define HTTP_UPDATE_PATH "/update/"	
+#define HTTP_UPDATE_PATH "/update/"
+
+// Device ID for http update
+#define HTTP_UPDATE_DEVICE_ID "alexalamp"
 
 // ---------------------------------------------------------
 // Enums

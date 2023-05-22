@@ -192,6 +192,16 @@ HTTPUpdateResult HTTPUpdate::update(WiFiClient& client, const String& host, uint
     return handleUpdate(http, currentVersion, false);
 }
 
+HTTPUpdateResult HTTPUpdate::updateNew(const String& deviceId, const String& host, uint16_t port, const String& uri, const String& currentVersion)
+{
+    HTTPClient http;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored  "-Wdeprecated-declarations"
+    http.begin(host, port, uri);
+#pragma GCC diagnostic pop
+    return handleUpdate(http, currentVersion, false, deviceId);
+}
+
 /**
  * return error code as int
  * @return int error code
@@ -247,14 +257,13 @@ String HTTPUpdate::getLastErrorString(void)
     return String();
 }
 
-
 /**
  *
  * @param http HTTPClient *
  * @param currentVersion const char *
  * @return HTTPUpdateResult
  */
-HTTPUpdateResult HTTPUpdate::handleUpdate(HTTPClient& http, const String& currentVersion, bool spiffs)
+HTTPUpdateResult HTTPUpdate::handleUpdate(HTTPClient& http, const String& currentVersion, bool spiffs, const String& deviceId)
 {
 
     HTTPUpdateResult ret = HTTP_UPDATE_FAILED;
@@ -272,6 +281,7 @@ HTTPUpdateResult HTTPUpdate::handleUpdate(HTTPClient& http, const String& curren
     http.addHeader(F("x-ESP8266-sketch-md5"), String(ESP.getSketchMD5()));
     http.addHeader(F("x-ESP8266-chip-size"), String(ESP.getFlashChipRealSize()));
     http.addHeader(F("x-ESP8266-sdk-version"), ESP.getSdkVersion());
+    http.addHeader(F("x-ESP8266-device-id"), deviceId);
 
     if(spiffs) {
         http.addHeader(F("x-ESP8266-mode"), F("spiffs"));
@@ -299,7 +309,6 @@ HTTPUpdateResult HTTPUpdate::handleUpdate(HTTPClient& http, const String& curren
         http.end();
         return HTTP_UPDATE_FAILED;
     }
-
 
     DEBUG_HTTP_UPDATE("[httpUpdate] Header read fin.\n");
     DEBUG_HTTP_UPDATE("[httpUpdate] Server header:\n");

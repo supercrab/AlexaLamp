@@ -215,6 +215,7 @@ void AdminWebServer::begin(Config* config){
 		char html[
 			strlen_P(HTML_ABOUT_PAGE) +
 			strlen(_getVersion()) +
+			strlen(WiFi.macAddress().c_str()) +
 			strlen(uptime) +
 			strlen(ESP.getSketchMD5().c_str()) +
 			strlen(__DATE__) + 
@@ -226,6 +227,7 @@ void AdminWebServer::begin(Config* config){
 			html, sizeof(html),
 			HTML_ABOUT_PAGE,
 			_getVersion(),
+			WiFi.macAddress().c_str(),
 			uptime,
 			ESP.getSketchMD5().c_str(),
 			__DATE__,
@@ -248,7 +250,7 @@ void AdminWebServer::begin(Config* config){
 		// Create array for our html
 		char html[
 			strlen_P(HTML_UPDATE_PAGE) +
-			strlen(WiFi.macAddress().c_str()) +
+			strlen(HTTP_UPDATE_DEVICE_ID) +
 			strlen(ESP.getSketchMD5().c_str()) 
 		];
 
@@ -256,7 +258,7 @@ void AdminWebServer::begin(Config* config){
 		snprintf_P(
 			html, sizeof(html),
 			HTML_UPDATE_PAGE,
-			WiFi.macAddress().c_str(), 
+			HTTP_UPDATE_DEVICE_ID, 
 			ESP.getSketchMD5().c_str()
 		);
 
@@ -538,9 +540,9 @@ void AdminWebServer::begin(Config* config){
 			
 			if (value >= 0 && value <= 255){
 				request->send(200);
+				Serial.printf("REST: brightness set to: %d\n", value);
 				_config->setBrightness(value);
 				_config->updateLight();
-				Serial.printf("REST: brightness set to: %d\n", value);
 			}
 			else{
 				request->send(400);

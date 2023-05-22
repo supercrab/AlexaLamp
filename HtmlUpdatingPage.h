@@ -65,8 +65,8 @@ const char HTML_UPDATING_PAGE[] PROGMEM = R"rawliteral(
 	function manualRestart(){
 		$("#message-container").removeClass("alert-warning");
 		$("#message-container").addClass("alert-danger");
-		$("#message-title").text("Firmware update probably finished");
-		$("#message-text").text("Please power cycle your device to finish the update");	
+		$("#message-title").text("Firmware should be finished by now");
+		$("#message-text").text("Please power cycle your device to finish the update.  It's also possible that the IP address on the device has changed.");	
 	}
 
 	function startTimer(){

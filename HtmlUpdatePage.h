@@ -42,10 +42,12 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 </div>
 
 <div class="container">
-	<h2>Remote Update</h2> 
+	<h2>Remote Update</h2>
 	<div>
 		<p id="update-info" class="alert alert-primary">Checking server for update...</p>
 	</div>
+
+	<div id="release-notes" class="mb-3"></div>
 
 	<div class="p-3 mb-2 bg-warning text-dark"> 
 		<h2>Custom Firmware</h2>
@@ -54,7 +56,7 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 		<form method="POST" action="#" enctype="multipart/form-data" id="upload-form">
 			<div class="input-group mb-3">
 				<div class="custom-file">
-					<input type="file" class="custom-file-input" name="update">
+					<input type="file" class="custom-file-input" name="update" id="update">
 					<label class="custom-file-label" for="update">Firmware file to upload</label>
 				</div>
 				<div class="input-group-append">
@@ -88,8 +90,43 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 </div>
 
 <script>
-	function displayResult(html){
-		$("#update-info").html(html);
+	function displayUpdateResult(upgradeData){
+
+		$("#update-info").empty();
+
+		if (upgradeData.response === true){
+			var link = $("<a>").attr('href', "/updatenow").text("Click here to upgrade!").addClass("btn btn-success");
+      		$("#update-info").append(link);
+
+			$.getJSON("https://raw.githubusercontent.com/supercrab/AlexaLamp/master/releases.json", function(data) {
+				const release = data.releases.find(release => release.md5 === upgradeData.md5);
+
+				if (release) {
+					const changesList = $("<ul></ul>").addClass("list-group");
+
+					const listItem = $("<li></li>").text(`Latest release notes: ${release.date}`).addClass("list-group-item active");
+					changesList.append(listItem);
+
+					release.changes.forEach(change => {
+						const listItem = $("<li></li>").text(change).addClass("list-group-item");
+						changesList.append(listItem);
+					});
+
+					$("#release-notes").append(changesList);
+				} 
+				else {
+					console.log(`Release version with the hash of ${upgradeData.md5} was not found on GitHub.`);
+				}
+			})
+			.fail(function(jqxhr, textStatus, error) {
+				console.error('Error fetching JSON:', error);
+			});
+
+      		return;
+		}
+
+		$("#update-info").addClass("alert alert-success");
+		$("#update-info").text("Your firmware is currently up to date!");
 	}
 
 	function displayError(text){
@@ -103,17 +140,11 @@ const char HTML_UPDATE_PAGE[] PROGMEM = R"rawliteral(
 
 	$(document).ready(function(){
 		$.getJSON(
-			'http://supercrab.co.uk/update/?mac=%s&md5=%s',
+			'http://supercrab.co.uk/update/?deviceid=%s&md5=%s',
 			function(data) {
 				if (data){
 					if (data.success === true){
-						if (data.response === true){
-							displayResult("<a href='/updatenow' class='btn btn-success'>Click here to upgrade!</a>");
-						}
-						else{
-							$("#update-info").addClass("alert alert-success");
-							displayResult("Your firmware is currently up to date!");
-						}
+						displayUpdateResult(data);
 					}
 					else{
 						displayError(data.message);

@@ -47,6 +47,8 @@ const char HTML_ABOUT_PAGE[] PROGMEM = R"rawliteral(
 			<dl>
 				<dt>Version</dt>
 				<dd>%s</dd>
+				<dt>MAC address</dt>
+				<dd>%s</dd>
 				<dt>Uptime<dt>
 				<dd>%s</dd>
 				<dt>MD5</dt>

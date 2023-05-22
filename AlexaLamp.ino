@@ -15,10 +15,11 @@
 // TODO
 // ====
 // 
-// * Lamp flickers with values < 100, this seems to be down to the newer ESP core
+// * Lamp might flickers with values < 100, this seems to be down to the newer ESP core
 // * MDNS seems to be flakey especially after you setup wifi using the automatic hotspot
-//   hopefully fixed in a newer version of the ESP8266 core
+//   hopefully fixed in a newer version of the ESP8266 core (not related to any code here)
 // * Fauxmo - when 2 devices have the same Alexa name and you browse to the device on port 80, it causes a restart
+//  (might be fixed due to the MAC address not being static now)
 //
 // ---------------------------------------------------------
 // Main configuration
@@ -84,6 +85,9 @@ SoftwareTimer timerAutomaticUpdate;
 AdminWebServer server(ADMIN_WEB_PORT);
 Config config;
 
+// Calculate PWM constant
+const float pwm = (255 * log10(2))/log10(255);
+
 // Previous encoder value
 int16_t encoderOldValue = 0;
 
@@ -96,6 +100,27 @@ void setupSerial(){
 	Serial.println(F("Application started"));
 	Serial.println(F("-----------------------------------"));
 	Serial.println();
+}
+
+// Set the brightness based on a correction for non linear brightness
+// https://diarmuid.ie/blog/pwm-exponential-led-fading-on-arduino-or-other-platforms
+void setLightBrightness(uint8_t value){
+	uint8_t brightness = correctPwmBrightness(value);
+	light.setBrightness(brightness);
+}
+
+// Function to correct for non linear brightness when using PWM
+//
+// Works but the light was practically off at brightness value 100
+// Needs some sort of light calibration which is probably different for all bulbs, so disabled for now
+uint8_t correctPwmBrightness(uint8_t value){
+	return value;
+	/*
+	if (value == 255) {
+		return 255;
+	}
+	return pow(2, (value / pwm)) - 1;
+	*/
 }
 
 // Callback for when remote update starts
@@ -111,7 +136,7 @@ void remoteUpdateFinished() {
 	config.systemUpdated();
 
 	// Turn light off before restarting because the light (timer) becomes unstable
-	light.setBrightness(0);
+	setLightBrightness(0);
 }
 
 // Info on using the updater class:
@@ -136,7 +161,7 @@ t_httpUpdate_return update(bool install){
 	}
 	
 	// Old way - works perfectly but is deprecated 
-	t_httpUpdate_return ret = ESPhttpUpdate.update(HTTP_UPDATE_SERVER, 80, HTTP_UPDATE_PATH);
+	t_httpUpdate_return ret = ESPhttpUpdate.updateNew(HTTP_UPDATE_DEVICE_ID, HTTP_UPDATE_SERVER, 80, HTTP_UPDATE_PATH);
 
 	// New way - no worky, gives me a 301 (moved permenantly error), probably my host
 	/*
@@ -202,17 +227,6 @@ void pulseLight(uint8_t times = 1){
 	}
 }
 
-// Setup the MAC address
-// Notes: if this is done too late it will cause the device to reconnect so best done early 
-void setupMACAddress(){
-
-	Serial.println(F("WIFI: setting up MAC address"));
-
-	// MAC address is also used as a device identifier when updating
-	uint8_t mac[6] {170, 186, 190, 170, 250, 206}; // AA:BA:BE:AA:FA:CE
-	wifi_set_macaddr(STATION_IF, mac);
-}
-
 // Setup hostname
 void setupHostname(){
 
@@ -233,12 +247,12 @@ void wifiManagerCallback(AsyncWiFiManager *myWiFiManager) {
 // Setup MDNS
 void setupMDNS(){
 
-	MDNS.close();
-
 	// Try and give us a name MDNS
 	Serial.print(F("MDNS: setting up host as ")); 
 	Serial.print(HOSTNAME);
 	Serial.println(F(".local"));
+
+	MDNS.close();
 	if (!MDNS.begin(HOSTNAME)) {
 		Serial.println(F("MDNS: failed"));
 	}
@@ -326,7 +340,7 @@ void setupFauxmo(){
 			config.setBrightness(value);
 
 			// Set light brightness
-			light.setBrightness(config.getState() ? config.getBrightness() : 0);
+			setLightBrightness(config.getState() ? config.getBrightness() : 0);
 
 			// Set the rotary encolder value to current brightness (invert if required)
 			setEncoderValue();
@@ -425,7 +439,7 @@ void updateSystem(){
 void updateLight(){
 
 	// Set the brightness!
-	light.setBrightness(config.getState() ? config.getBrightness() : 0);
+	setLightBrightness(config.getState() ? config.getBrightness() : 0);
 
 	// Reset rotary encoder to current brightness
 	// (this prevents rotary encoder affecting brightness when light is off)
@@ -541,8 +555,7 @@ void setup() {
 
 		Serial.println(F("WIFI: starting setup"));
 
-		// Setup MAC address and hostname
-		setupMACAddress();
+		// Setup hostname
 		setupHostname();
 
 		// Setup wifi manager
@@ -634,7 +647,7 @@ void loop() {
 		config.toggleState();
 
 		// Set the brightness!
-		light.setBrightness(config.getState() ? config.getBrightness() : 0);
+		setLightBrightness(config.getState() ? config.getBrightness() : 0);
 
 		// Reset rotary encoder to current brightness
 		// (this prevents rotary encoder affecting brightness when light is off)
@@ -676,7 +689,7 @@ void loop() {
 			config.setBrightness(config.getEncoderInverted() ? 255 - encoderNewValue : encoderNewValue);
 
 			// Set light brightness
-			light.setBrightness(config.getBrightness());
+			setLightBrightness(config.getBrightness());
 
 			// Broadcast light state
 			updateAlexa();
