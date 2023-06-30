@@ -23,10 +23,11 @@
 			"md5": "83eeb5bee9123913e7f35361bf7c9c70",
 			"date": "30 June 2023",
 			"changes": [
-				"System will check for upgrades on startup and flash 3 times before installing",
-				"New server used to store and handle upgrades",
-				"Each device will have a unique host name",
-				"System will send a heartbeat to the server to announce it's presence"
+				"System will check for upgrades on startup and will the lamp 3 times before installing",
+				"A new server has been setup to store and handle upgrades",
+				"Devices will not have the default hostname of lamp.local.  Instead, each device will have a unique host name which is exposed locaing using mDNS",
+				"System will send a heartbeat to the server to announce it's presence",
+				"A new centralisted system for administering devices on a network has been created which can be found at lampsetup.com"
 			]
 		}
 	]
