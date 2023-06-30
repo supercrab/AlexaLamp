@@ -17,6 +17,17 @@
 				"Added upgrade system to provide release notes in the web interface",
 				"Tested out possible linear pwm brightness fixes"
 			]
+		},
+		{
+			"version": "20230630.1516",
+			"md5": "83eeb5bee9123913e7f35361bf7c9c70",
+			"date": "30 June 2023",
+			"changes": [
+				"System will check for upgrades on startup and flash 3 times before installing",
+				"New server used to store and handle upgrades",
+				"Each device will have a unique host name",
+				"System will send a heartbeat to the server to announce it's presence"
+			]
 		}
 	]
 }
